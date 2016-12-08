@@ -101,6 +101,8 @@
  			$.post(url,{id:id,pathstr:pathstr},function(data){
  				if(data.success){
  					tip(data.msg);
+ 					var win = frameElement.api.opener;
+ 					win.reloadTable();
  				}else{
  					tip(data.msg);
  				}

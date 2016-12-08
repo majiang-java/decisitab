@@ -34,6 +34,7 @@ public class VarType extends IdEntity implements java.io.Serializable {
 	private BigDecimal codevalue1; //第一码值
 	private BigDecimal codevalue2; //第二码值
 	private BigDecimal score; //分值
+	private String code;//编码
 	
 	
 //	private List<TPProcess> TSProcesses = new ArrayList();
@@ -124,6 +125,22 @@ public class VarType extends IdEntity implements java.io.Serializable {
 	 */
 	public void setScore(BigDecimal score) {
 		this.score = score;
+	}
+
+	/**
+	 * code
+	 * @return  the code
+	*/
+	@Column(name = "code", length = 120)
+	public String getCode() {
+		return code;
+	}
+
+	/**
+	 * @param code the code to set
+	 */
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 }

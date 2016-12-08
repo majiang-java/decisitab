@@ -120,7 +120,6 @@ public class ModelVarServiceImpl extends CommonServiceImpl implements ModelVarSe
 			varTypegroup = new VarTypegroup();
 			varTypegroup.setVarTypegroupcode(varTypegroupcode);
 			varTypegroup.setVarTypegroupname(typgroupename);
-			varTypegroup.setTypecode(typecode);
 			commonDao.save(varTypegroup);
 		}
 		return varTypegroup;

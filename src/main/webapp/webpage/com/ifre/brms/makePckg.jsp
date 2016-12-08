@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>产品打包</title>
+<title>决策打包</title>
 <t:base type="jquery,easyui,tools"></t:base>
 <script type="text/javascript">
  	function cal(data){
@@ -152,14 +152,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>产品打包</title>
+<title>决策打包</title>
 <script type="text/javascript" src="plug-in/mutiLang/zh-cn.js">
 </script><script type="text/javascript" src="plug-in/jquery/jquery-1.8.3.js">
 </script><script type="text/javascript" src="plug-in/jquery/jquery.cookie.js" >
 </script><script type="text/javascript" src="plug-in/jquery-plugs/storage/jquery.storageapi.min.js" >
 </script><script type="text/javascript" src="plug-in/tools/dataformat.js">
-</script><link id="easyuiTheme" rel="stylesheet" href="plug-in/easyui/themes/default/easyui.css" type="text/css">
-</link><link rel="stylesheet" href="plug-in/easyui/themes/icon.css" type="text/css"></link>
+</script>
+<link id="easyuiTheme" rel="stylesheet" href="plug-in/easyui/themes/default/easyui.css" type="text/css"></link>
+<link rel="stylesheet" href="plug-in/easyui/themes/icon.css" type="text/css"></link>
+ <link rel="stylesheet" href="plug-in/Validform/css/divfrom.css" type="text/css"/>
+ <link rel="stylesheet" href="plug-in/Validform/css/style.css" type="text/css"/>
+ <link rel="stylesheet" href="plug-in/Validform/css/tablefrom.css" type="text/css"/>
 <link rel="stylesheet" type="text/css" href="plug-in/accordion/css/accordion.css">
 <script type="text/javascript" src="plug-in/easyui/jquery.easyui.min.1.3.2.js">
 </script><script type="text/javascript" src="plug-in/easyui/locale/zh-cn.js">
@@ -289,10 +293,7 @@
 		<input id="btnreset_1" type="button" class="button" value="回  退" onclick="returnBack()" data-options="plain:true"/>
 	</div>
 	</fieldset>
- <link rel="stylesheet" href="plug-in/Validform/css/divfrom.css" type="text/css"/>
- <link rel="stylesheet" href="plug-in/Validform/css/style.css" type="text/css"/>
- 
- <link rel="stylesheet" href="plug-in/Validform/css/tablefrom.css" type="text/css"/>
+
  
  <script type="text/javascript" src="plug-in/Validform/js/Validform_v5.3.1_min_zh-cn.js">
  </script><script type="text/javascript" src="plug-in/Validform/js/Validform_Datatype_zh-cn.js">

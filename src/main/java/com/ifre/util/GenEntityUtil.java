@@ -59,7 +59,7 @@ public class GenEntityUtil implements ICallBack {
 		}
 		return data;
 	}
-
+	
 	public String generateToFile() {
 		log.info((new StringBuilder("----Entity---Code----Generation----[")).append(entity.getName())
 				.append("]------- 生成中...").toString());
@@ -71,6 +71,51 @@ public class GenEntityUtil implements ICallBack {
 			GenEntityCodeFactory codeFactory = new GenEntityCodeFactory();
 			codeFactory.setCallBack(this);
 			codeFactory.invoke("entityBeanTemplate.ftl", "entity");
+	
+			String line = null;
+			String fileNamePath = codeFactory.getCodePath("entity", pckg.getAllName().substring(0, pckg.getAllName().lastIndexOf(".")), pckg.getName(), entity.getName());
+			log.info(fileNamePath);
+			file = new File(fileNamePath);
+			InputStream inputStream = new FileInputStream(file);
+			inputReader = new InputStreamReader(inputStream, "utf-8");
+			bufferReader = new BufferedReader(inputReader);
+			while ((line = bufferReader.readLine()) != null) {
+				strBuffer.append(line);
+				strBuffer.append("\r\n");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			try {
+				if (bufferReader != null)
+					bufferReader.close();
+				if (inputReader != null)
+					inputReader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
+			if(file !=null) file.delete();
+		}
+
+		log.info((new StringBuilder("----Entity----Code----Generation-----[")).append(entity.getName())
+				.append("]------ 生成完成").toString());
+		log.info(strBuffer.toString());
+		return strBuffer.toString();
+	}
+	
+	public String generateToFile(String templateName) {
+		log.info((new StringBuilder("----Entity---Code----Generation----[")).append(entity.getName())
+				.append("]------- 生成中...").toString());
+		File file = null;
+		InputStreamReader inputReader = null;
+		BufferedReader bufferReader = null;
+		StringBuffer strBuffer = new StringBuffer();
+		try {
+			GenEntityCodeFactory codeFactory = new GenEntityCodeFactory();
+			codeFactory.setCallBack(this);
+			codeFactory.invoke(templateName+".ftl", "entity");
 	
 			String line = null;
 			String fileNamePath = codeFactory.getCodePath("entity", pckg.getAllName().substring(0, pckg.getAllName().lastIndexOf(".")), pckg.getName(), entity.getName());

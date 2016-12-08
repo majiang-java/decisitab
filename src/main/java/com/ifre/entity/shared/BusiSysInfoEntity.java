@@ -52,6 +52,8 @@ public class BusiSysInfoEntity implements java.io.Serializable {
 	private java.lang.Integer status;
 	/**排序*/
 	private java.lang.Integer sorts;
+	/**组织机构*/
+	private java.lang.String orgCode;
 	
 	/**
 	 *方法: 取得java.lang.String
@@ -73,6 +75,16 @@ public class BusiSysInfoEntity implements java.io.Serializable {
 	public void setId(java.lang.String id){
 		this.id = id;
 	}
+	
+	@Column(name ="ORG_Code")
+	public java.lang.String getOrgCode() {
+		return orgCode;
+	}
+
+	public void setOrgCode(java.lang.String orgCode) {
+		this.orgCode = orgCode;
+	}
+	
 	/**
 	 *方法: 取得java.lang.String
 	 *@return: java.lang.String  渠道来源

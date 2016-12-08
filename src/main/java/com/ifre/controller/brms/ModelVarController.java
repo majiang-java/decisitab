@@ -23,10 +23,14 @@ import org.jeecgframework.core.extend.hqlsearch.parse.vo.HqlRuleEnum;
 import org.jeecgframework.core.util.ListUtils;
 import org.jeecgframework.core.util.MutiLangSqlCriteriaUtil;
 import org.jeecgframework.core.util.MutiLangUtil;
+import org.jeecgframework.core.util.ResourceUtil;
 import org.jeecgframework.core.util.StringUtil;
 import org.jeecgframework.core.util.oConvertUtils;
 import org.jeecgframework.tag.core.easyui.TagUtil;
+import org.jeecgframework.web.system.pojo.base.TSDepart;
+import org.jeecgframework.web.system.pojo.base.TSUser;
 import org.jeecgframework.web.system.service.MutiLangServiceI;
+import org.jeecgframework.web.system.service.SystemService;
 import org.jeecgframework.web.system.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,10 +39,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.ifre.entity.brms.RuleProdEntity;
 import com.ifre.entity.brms.VarType;
 import com.ifre.entity.brms.VarTypegroup;
 import com.ifre.service.brms.ModelVarServiceI;
+import com.ifre.service.brms.RuleProdServiceI;
 import com.ifre.util.ResoureceUtilBrms;
+
+/**
+ * 类型字段处理类
+ *
+ * @author caojianmiao
+ * @param <ModelVarService>
+ *
+ */
+//@Scope("prototype")
 
 /**
  * 类型字段处理类
@@ -52,29 +67,18 @@ import com.ifre.util.ResoureceUtilBrms;
 @RequestMapping("/modelVarController")
 public class ModelVarController extends BaseController {
 	private static final Logger logger = Logger.getLogger(ModelVarController.class);
+	@Autowired
 	private UserService userService;
+	@Autowired
 	private ModelVarServiceI modelVarService;
+	@Autowired
 	private MutiLangServiceI mutiLangService;
-
-
 	@Autowired
-	public void setModelVarService(ModelVarServiceI modelVarService) {
-		this.modelVarService = modelVarService;
-	}
-
+	private RuleProdServiceI ruleProdService;
 	@Autowired
-	public void setMutiLangService(MutiLangServiceI mutiLangService) {
-		this.mutiLangService = mutiLangService;
-	}
+	private SystemService systemService;
 
-	public UserService getUserService() {
-		return userService;
-	}
-
-	@Autowired
-	public void setUserService(UserService userService) {
-		this.userService = userService;
-	}
+	
 	@RequestMapping(params = "druid")
 	public ModelAndView druid() {
 		return new ModelAndView(new RedirectView("druid/index.html"));
@@ -98,7 +102,14 @@ public class ModelVarController extends BaseController {
 	 */
 	@RequestMapping(params = "typeGroupList")
 	public ModelAndView typeGroupList(HttpServletRequest request) {
-		return new ModelAndView("com/ifre/brms/typeGroupList");
+		String prodType = request.getParameter("prodType");
+        request.setAttribute("prodType", prodType);
+		if (prodType != null &&  prodType.equals("1")) {
+			return new ModelAndView("com/ifre/brms/modelTypeGroupList");
+		} else {
+			return new ModelAndView("com/ifre/brms/ruleTypeGroupList");
+		}
+		
 	}
 
 	/**
@@ -121,11 +132,32 @@ public class ModelVarController extends BaseController {
 	@RequestMapping(params = "typeGroupGrid")
 	public void typeGroupGrid(HttpServletRequest request, HttpServletResponse response, DataGrid dataGrid, VarTypegroup typegroup) {
 		CriteriaQuery cq = new CriteriaQuery(VarTypegroup.class, dataGrid);
+		org.jeecgframework.core.extend.hqlsearch.HqlGenerateUtil.installHql(cq, typegroup);
 //        add-start--Author:zhangguoming  Date:20140929 for：多语言条件添加
         String vartypegroupname = request.getParameter("vartypegroupname");
+        String prodType = request.getParameter("prodType");
+        cq.createAlias("ruleProdEntity", "ruleProdEntity");
+        
+        TSUser tSUser = ResourceUtil.getSessionUserName();
+        String deptid = tSUser.getCurrentDepart().getId();
+        if (!"A01".equals(tSUser.getCurrentDepart().getOrgCode())) {
+        	cq.eq("ruleProdEntity.orgId", deptid);	
+        	//机构过滤-后台实现-20161128不使用常规方式，使用操哥方式
+        	//cq.eq("orgCode", tSUser.getSysCompanyCode());
+        }
+        
+        cq.eq("type", Integer.parseInt(prodType));
+        cq.add();
+        
+        
+        
         if(vartypegroupname != null && vartypegroupname.trim().length() > 0) {
             vartypegroupname = vartypegroupname.trim();
-            List<String> vartypegroupnameKeyList = modelVarService.findByQueryString("select vartypegroupname from brms_var_typegroup");
+    		StringBuilder hql = new StringBuilder("select vartypegroupname from brms_var_typegroup t, brms_rule_prod p where t.typecode = p.id").append(" and type = " + Integer.parseInt(prodType));
+    		if (!"A01".equals(tSUser.getCurrentDepart().getOrgCode())) {
+    			hql.append(" and p.orgId = '" + deptid + "'");
+    		}
+            List<String> vartypegroupnameKeyList = modelVarService.findByQueryString(hql.toString());
             if(vartypegroupname.lastIndexOf("*")==-1){
             	vartypegroupname = vartypegroupname + "*";
             }
@@ -180,7 +212,13 @@ public class ModelVarController extends BaseController {
 	public void typeGrid(HttpServletRequest request, HttpServletResponse response, DataGrid dataGrid) {
 		String typegroupid = request.getParameter("typegroupid");
 		String typename = request.getParameter("typename");
+		String prodType = request.getParameter("prodType") != null ? request.getParameter("prodType") : "1";
+		
+		
 		CriteriaQuery cq = new CriteriaQuery(VarType.class, dataGrid);
+		cq.getDetachedCriteria().createCriteria("varTypegroup").createAlias("ruleProdEntity", "rpe");
+		
+		cq.eq("rpe.type", Integer.parseInt(prodType));
 		cq.eq("varTypegroup.id", typegroupid);
 		cq.like("typename", typename);
 		cq.add();
@@ -201,8 +239,14 @@ public class ModelVarController extends BaseController {
 	@RequestMapping(params = "goTypeGrid")
 	public ModelAndView goTypeGrid(HttpServletRequest request) {
 		String typegroupid = request.getParameter("typegroupid");
+		String prodType = request.getParameter("prodType");
         request.setAttribute("typegroupid", typegroupid);
-		return new ModelAndView("com/ifre/brms/typeListForTypegroup");
+        request.setAttribute("prodType", prodType);
+		if (prodType != null &&  prodType.equals("1")) {
+			return new ModelAndView("com/ifre/brms/typeListForTypegroup");
+		} else {
+			return new ModelAndView("com/ifre/brms/typeListForTypegroupRule");
+		}        
 	}
 
 
@@ -362,6 +406,8 @@ public class ModelVarController extends BaseController {
 	public AjaxJson saveTypeGroup(VarTypegroup varTypegroup, HttpServletRequest request) {
 		String message = null;
 		AjaxJson j = new AjaxJson();
+		RuleProdEntity ruleProdEntity = ruleProdService.getEntity(RuleProdEntity.class, varTypegroup.getRuleProdEntity().getId());
+		varTypegroup.setType(ruleProdEntity.getType());
 		if (StringUtil.isNotEmpty(varTypegroup.getId())) {
 			message = "类型分组: " + mutiLangService.getLang(varTypegroup.getVarTypegroupname()) + "被更新成功";
 			userService.saveOrUpdate(varTypegroup);
@@ -436,11 +482,27 @@ public class ModelVarController extends BaseController {
 	@RequestMapping(params = "aouTypeGroup")
 	public ModelAndView aouTypeGroup(VarTypegroup varTypegroup, HttpServletRequest req) {
 		Map<String,Object> data = new HashMap<String,Object>(); 
+		List<RuleProdEntity> ruleProdList = new ArrayList<RuleProdEntity>();
+		String prodType = req.getParameter("prodType");
 		if (varTypegroup.getId() != null) {
 			varTypegroup = modelVarService.getEntity(VarTypegroup.class, varTypegroup.getId());
-//			req.setAttribute("varTypegroup1", varTypegroup);
 		    data.put("varTypegroup",varTypegroup); 
 		}
+		/*选择当前有效期内状态为激活的机构，且方案为激活状态
+		 * 用户为admin，显示所有机构下的激活方案
+		 * 用户为其它，显示当前用户所属机构下激活的方案
+		 **/
+		TSUser tSUser = ResourceUtil.getSessionUserName();
+		StringBuffer temphql = new StringBuffer("from RuleProdEntity where rightStatus= '1'");
+		temphql = prodType!=null ? temphql.append(" and type = '" + prodType + "'") : temphql;
+		if (!"A01".equals(tSUser.getCurrentDepart().getOrgCode())) {
+			String deptid = tSUser.getCurrentDepart().getId();
+			ruleProdList = ruleProdService.findHql(temphql.append(" and orgId = '" + deptid + "'").toString());
+		}else{
+			ruleProdList = ruleProdService.findHql(temphql.toString());
+		}
+		
+		data.put("ruleProdList",ruleProdList); 
 		return new ModelAndView("com/ifre/brms/varTypegroup",data);
 	}
 
@@ -452,7 +514,9 @@ public class ModelVarController extends BaseController {
 	@RequestMapping(params = "addorupdateType")
 	public ModelAndView addorupdateType(VarType type, HttpServletRequest req) {
 		String typegroupid = req.getParameter("typegroupid");
+		String prodType = req.getParameter("prodType");
 		req.setAttribute("typegroupid", typegroupid);
+		req.setAttribute("prodType", prodType);
         VarTypegroup typegroup = modelVarService.findUniqueByProperty(VarTypegroup.class, "id", typegroupid);
         String varTypegroupname = typegroup.getVarTypegroupname();
         req.setAttribute("varTypegroupname", mutiLangService.getLang(varTypegroupname));

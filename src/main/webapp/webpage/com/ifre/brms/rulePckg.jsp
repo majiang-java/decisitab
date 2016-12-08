@@ -43,7 +43,7 @@
 					</td>
 					<td class="value">
 						<input class="inputxt" id="prodName" name="prodName" readonly
-							    datatype="*">
+							    datatype="*" style="min-width:260px;">
 						<span class="Validform_checktip"></span>
 					</td>
 					
@@ -58,7 +58,7 @@
 
 					<td class="value">
 						<input class="inputxt" id="name" name="name" ignore="ignore"
-							   value="${rulePckgPage.name}">
+							   value="${rulePckgPage.name}" style="min-width:260px;">
 						<span class="Validform_checktip"></span>
 					</td> 
 <!--   <td class="value">
@@ -92,7 +92,7 @@
 						<div id="container">
                         <div id="content">
                         <div class="first"><input class="inputxt" id="allName" name="allName" ignore="ignore"
-							   value="${rulePckgPage.allName}" onKeyup="getContent(this);" onblur="combine()"/></div>
+							   value="${rulePckgPage.allName}" onKeyup="getContent(this);" onblur="combine()" style="min-width:260px;"/></div>
                          <div id="append" class="inputxt"></div>
                            </div>
                         </div>
@@ -105,9 +105,10 @@
 						</label>
 					</td>
 					<td class="value">
-						<input class="inputxt" id="descp" name="descp" ignore="ignore"
-							   value="${rulePckgPage.descp}">
-						<span class="Validform_checktip"></span>
+						<%-- <input class="inputxt" id="descp" name="descp"  
+							   value="${rulePckgPage.descp}" style="min-width:260px;">
+						<span class="Validform_checktip"></span> --%>
+						<textarea id="descp" name="descp" rows="2" style="min-width:260px;">${rulePckgPage.descp}</textarea>
 					</td>
 				</tr>
 <%-- 				<tr>

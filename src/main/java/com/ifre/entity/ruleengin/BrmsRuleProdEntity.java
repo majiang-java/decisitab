@@ -1,19 +1,14 @@
 package com.ifre.entity.ruleengin;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
-import javax.persistence.SequenceGenerator;
 
 /**   
  * @Title: Entity
@@ -35,6 +30,8 @@ public class BrmsRuleProdEntity implements java.io.Serializable {
 	private java.lang.String orgId;
 	/**知识库ID*/
 	private java.lang.String kknwldgId;
+	/**方案类别*/
+	private java.lang.Integer type;
 	/**名称*/
 	private java.lang.String name;
 	/**描述*/
@@ -60,6 +57,11 @@ public class BrmsRuleProdEntity implements java.io.Serializable {
 	/**修改时间*/
 	private java.util.Date updateDate;
 	
+	/**权限状态*/
+	private java.lang.Integer rightStatus;	
+	
+	/**模板类别*/
+	private java.lang.String tempType;		
 	/**
 	 *方法: 取得java.lang.String
 	 *@return: java.lang.String  ID
@@ -303,5 +305,54 @@ public class BrmsRuleProdEntity implements java.io.Serializable {
 	 */
 	public void setUpdateDate(java.util.Date updateDate){
 		this.updateDate = updateDate;
+	}
+
+	/**
+	 * type
+	 * @return  the type
+	*/
+	@Column(name ="TYPE",nullable=true,precision=10,scale=0)
+	public Integer getType() {
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	/**
+	 * rightStatus
+	 * @return  the rightStatus
+	*/
+	@Column(name ="RIGHT_STATUS",nullable=true,precision=10,scale=0)
+	public java.lang.Integer getRightStatus() {
+		return rightStatus;
+	}
+
+	/**
+	 * @param rightStatus the rightStatus to set
+	 */
+	
+	public void setRightStatus(java.lang.Integer rightStatus) {
+		this.rightStatus = rightStatus;
+	}
+
+	/**
+	 * tempType
+	 * @return  the tempType
+	*/
+	@Column(name ="TEMP_TYPE",nullable=true,length=20)
+	public java.lang.String getTempType() {
+		return tempType;
+	}
+
+	/**
+	 * @param tempType the tempType to set
+	 */
+	public void setTempType(java.lang.String tempType) {
+		this.tempType = tempType;
 	}
 }

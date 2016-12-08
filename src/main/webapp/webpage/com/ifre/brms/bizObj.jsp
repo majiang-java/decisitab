@@ -145,10 +145,13 @@
 					value="${bizObjPage.name}"> <span
 					class="Validform_checktip"></span></td>
 				<td align="right"><label class="Validform_label">描述:</label></td>
-				<td class="value"><input nullmsg="请填写描述" errormsg="描述格式不对"
-					class="inputxt" id="descp" name="descp" ignore="ignore"
-					value="${bizObjPage.descp}"> <span
-					class="Validform_checktip"></span></td>
+				<td class="value">
+					<%-- <input nullmsg="请填写描述" errormsg="描述格式不对"
+						class="inputxt" id="descp" name="descp" ignore="ignore"
+						value="${bizObjPage.descp}"> <span
+						class="Validform_checktip"></span> --%>
+					<textarea nullmsg="请填写描述" errormsg="描述格式不对" id="descp" name="descp" ignore="ignore" rows="2" style="min-width:150px;">${bizObjPage.descp}</textarea>
+				</td>
 			</tr>
 			<tr hidden="true">
 				<td align="right"><label class="Validform_label">源码:</label></td>

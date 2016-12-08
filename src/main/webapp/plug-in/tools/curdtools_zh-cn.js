@@ -1,4 +1,4 @@
-﻿//﻿var jq = jQuery.noConflict();
+﻿﻿//﻿var jq = jQuery.noConflict();
 /**
  * 增删改工具栏
  */
@@ -8,7 +8,32 @@
 var iframe;// iframe操作对象
 var win;//窗口对象
 var gridname="";//操作datagrid对象名称
-var windowapi = frameElement.api, W = windowapi.opener;//内容页中调用窗口实例对象接口
+//scott 20160426 JS异常报错
+var windowapi;
+var W;
+try {
+	windowapi = frameElement.api, W = windowapi.opener;//内容页中调用窗口实例对象接口
+} catch (e) {
+}
+
+
+/**
+ * 设置 window的 zIndex
+ * @param flag true: 不增量(因为 tip提示经常使用 zIndex, 所以如果是 tip的话 ,则不增量)
+ * @returns
+ */
+function getzIndex(flag){
+	var zindexNumber = getCookie("ZINDEXNUMBER");
+	if(zindexNumber == null){
+		setCookie("ZINDEXNUMBER",1980);
+		zindexNumber = 1980;
+	}else{
+		var n = flag?zindexNumber:parseInt(zindexNumber) + parseInt(10);
+		setCookie("ZINDEXNUMBER",n);
+	}
+	return zindexNumber;
+}
+
 function upload(curform) {
 	upload();
 }
@@ -105,6 +130,7 @@ function deleteALLSelect(title,url,gname) {
     var ids = [];
     var rows = $("#"+gname).datagrid('getSelections');
     if (rows.length > 0) {
+    	$.dialog.setting.zIndex = getzIndex(true);
     	$.dialog.confirm('你确定永久删除该数据吗?', function(r) {
 		   if (r) {
 				for ( var i = 0; i < rows.length; i++) {
@@ -152,6 +178,7 @@ function createdetailwindow(title, addurl,width,height) {
 	if(typeof(windowapi) == 'undefined'){
 		$.dialog({
 			content: 'url:'+addurl,
+			zIndex: getzIndex(),
 			lock : true,
 			width:width,
 			height: height,
@@ -160,10 +187,11 @@ function createdetailwindow(title, addurl,width,height) {
 			cache:false, 
 		    cancelVal: '关闭',
 		    cancel: true /*为true等价于function(){}*/
-		}).zindex();
+		});
 	}else{
 		W.$.dialog({
 			content: 'url:'+addurl,
+			zIndex: getzIndex(),
 			lock : true,
 			width:width,
 			height: height,
@@ -173,7 +201,7 @@ function createdetailwindow(title, addurl,width,height) {
 			cache:false, 
 		    cancelVal: '关闭',
 		    cancel: true /*为true等价于function(){}*/
-		}).zindex();
+		});
 	}
 	
 }
@@ -197,7 +225,7 @@ function delObj(url,name) {
 	gridname=name;
 	if(url.indexOf("downJar") > 0){
 		var status =url.substr(url.length-1);
-		if(status==1){
+		if(status==5){
 			window.location.href=url;
 		}else{
 			tip('请先打包再下载');
@@ -209,10 +237,11 @@ function delObj(url,name) {
 }
 // 删除调用函数
 function confuploadify(url, id) {
+		$.dialog.setting.zIndex = getzIndex(true);
 	$.dialog.confirm('确定删除吗', function(){
 		deluploadify(url, id);
 	}, function(){
-	}).zindex();
+	});
 }
 /**
  * 执行删除附件
@@ -246,17 +275,15 @@ function confirm(url, content,name) {
  * 提示信息
  */
 function tip_old(msg) {
-	$.dialog.setting.zIndex = 1980;
+	$.dialog.setting.zIndex = getzIndex(true);
 	$.dialog.tips(msg, 1);
 }
 /**
  * 提示信息
  */
 function tip(msg) {
-	if(msg==""||msg==null){
-	}else{
 	try{
-		$.dialog.setting.zIndex = 1980;
+		$.dialog.setting.zIndex = getzIndex(true);
 		$.messager.show({
 			title : '提示信息',
 			msg : msg,
@@ -266,29 +293,31 @@ function tip(msg) {
 		alertTipTop(msg,'10%');
 	}
 }
-}
+
 function alertTipTop(msg,top,title) {
-	$.dialog.setting.zIndex = 1980;
+	$.dialog.setting.zIndex = getzIndex(true);
 	title = title?title:"提示信息";
 	$.dialog({
 			title:title,
+			zIndex: getzIndex(),
 			icon:'tips.gif',
 			top:top,
 			content: msg
-		}).zindex();
+		});
 }
 
 /**
  * 提示信息像alert一样
  */
 function alertTip(msg,title) {
-	$.dialog.setting.zIndex = 1980;
+	$.dialog.setting.zIndex = getzIndex(true);
 	title = title?title:"提示信息";
 	$.dialog({
 			title:title,
+			zIndex: getzIndex(),
 			icon:'tips.gif',
 			content: msg
-		}).zindex();
+		});
 }
 /**
  * 创建添加或编辑窗口
@@ -309,7 +338,7 @@ function createwindow(title, addurl,width,height) {
 		$.dialog({
 			content: 'url:'+addurl,
 			lock : true,
-			//zIndex:1990,
+			zIndex: getzIndex(),
 			width:width,
 			height:height,
 			title:title,
@@ -322,13 +351,13 @@ function createwindow(title, addurl,width,height) {
 		    },
 		    cancelVal: '关闭',
 		    cancel: true /*为true等价于function(){}*/
-		}).zindex();
+		});
 	}else{
 		W.$.dialog({
 			content: 'url:'+addurl,
 			lock : true,
 			width:width,
-			//zIndex:1990,
+			zIndex:getzIndex(),
 			height:height,
 			parent:windowapi,
 			title:title,
@@ -341,7 +370,7 @@ function createwindow(title, addurl,width,height) {
 		    },
 		    cancelVal: '关闭',
 		    cancel: true /*为true等价于function(){}*/
-		}).zindex();
+		});
 	}
     //--author：JueYue---------date：20140427---------for：弹出bug修改,设置了zindex()函数
 	
@@ -357,6 +386,7 @@ function openuploadwin(title, url,name,width, height) {
 	gridname=name;
 	$.dialog({
 	    content: 'url:'+url,
+		zIndex: getzIndex(),
 	    cache:false,
 	    button: [
 	        {
@@ -376,7 +406,7 @@ function openuploadwin(title, url,name,width, height) {
 	            }
 	        }
 	    ]
-	}).zindex();
+	});
 }
 /**
  * 创建查询页面窗口
@@ -388,6 +418,7 @@ function openuploadwin(title, url,name,width, height) {
 function opensearchdwin(title, url, width, height) {
 	$.dialog({
 		content: 'url:'+url,
+		zIndex: getzIndex(),
 		title : title,
 		lock : true,
 		height : height,
@@ -407,7 +438,7 @@ function opensearchdwin(title, url, width, height) {
 
 			}
 		} ]
-	}).zindex();
+	});
 }
 /**
  * 创建不带按钮的窗口
@@ -423,22 +454,24 @@ function openwindow(title, url,name, width, height) {
 		if(typeof(windowapi) == 'undefined'){
 			$.dialog({
 				content: 'url:'+url,
+				zIndex: getzIndex(),
 				title : title,
 				cache:false,
 				lock : true,
 				width: 'auto',
 			    height: height
-			}).zindex();
+			});
 		}else{
 			$.dialog({
 				content: 'url:'+url,
+				zIndex: getzIndex(),
 				title : title,
 				cache:false,
 				parent:windowapi,
 				lock : true,
 				width: 'auto',
 			    height: height
-			}).zindex();
+			});
 		}
 	}
 	if (typeof (height) == 'undefined'&&typeof (width) != 'undefined')
@@ -447,21 +480,23 @@ function openwindow(title, url,name, width, height) {
 			$.dialog({
 				content: 'url:'+url,
 				title : title,
+				zIndex: getzIndex(),
 				lock : true,
 				width: width,
 				cache:false,
 			    height: 'auto'
-			}).zindex();
+			});
 		}else{
 			$.dialog({
 				content: 'url:'+url,
+				zIndex: getzIndex(),
 				title : title,
 				lock : true,
 				parent:windowapi,
 				width: width,
 				cache:false,
 			    height: 'auto'
-			}).zindex();
+			});
 		}
 	}
 	if (typeof (width) == 'undefined'&&typeof (height) == 'undefined')
@@ -469,22 +504,24 @@ function openwindow(title, url,name, width, height) {
 		if(typeof(windowapi) == 'undefined'){
 			$.dialog({
 				content: 'url:'+url,
+				zIndex: getzIndex(),
 				title : title,
 				lock : true,
 				width: 'auto',
 				cache:false,
 			    height: 'auto'
-			}).zindex();
+			});
 		}else{
 			$.dialog({
 				content: 'url:'+url,
+				zIndex: getzIndex(),
 				title : title,
 				lock : true,
 				parent:windowapi,
 				width: 'auto',
 				cache:false,
 			    height: 'auto'
-			}).zindex();
+			});
 		}
 	}
 	
@@ -495,20 +532,22 @@ function openwindow(title, url,name, width, height) {
 				width: width,
 			    height:height,
 				content: 'url:'+url,
+				zIndex: getzIndex(),
 				title : title,
 				cache:false,
 				lock : true
-			}).zindex();
+			});
 		}else{
 			$.dialog({
 				width: width,
 			    height:height,
 				content: 'url:'+url,
+				zIndex: getzIndex(),
 				parent:windowapi,
 				title : title,
 				cache:false,
 				lock : true
-			}).zindex();
+			});
 		}
 	}
 }
@@ -521,11 +560,12 @@ function openwindow(title, url,name, width, height) {
  * @param url
  */
 function createdialog(title, content, url,name) {
+	$.dialog.setting.zIndex = getzIndex(true);
 	$.dialog.confirm(content, function(){
 		doSubmit(url,name);
 		rowid = '';
 	}, function(){
-	}).zindex();
+	});
 }
 /**
  * 执行保存
@@ -617,10 +657,11 @@ function doSubmit(url,name,data) {
  * @param index
  */
 function exit(url, content) {
+	$.dialog.setting.zIndex = getzIndex(true);
 	$.dialog.confirm(content, function(){
 		window.location = url;
 	}, function(){
-	}).zindex();
+	});
 }
 /**
  * 模板页面ajax提交
@@ -659,6 +700,7 @@ function ajaxdoForm(url, formname) {
 function opensubwin(title, url, saveurl, okbutton, closebutton) {
 	$.dialog({
 		content: 'url:'+url,
+		zIndex: getzIndex(),
 		title : title,
 		lock : true,
 		opacity : 0.3,
@@ -676,12 +718,13 @@ function opensubwin(title, url, saveurl, okbutton, closebutton) {
 			}
 		} ]
 
-	}).zindex();
+	});
 }
 
 function openauditwin(title, url, saveurl, okbutton, backbutton, closebutton) {
 	$.dialog({
 		content: 'url:'+url,
+		zIndex: getzIndex(),
 		title : title,
 		lock : true,
 		opacity : 0.3,
@@ -716,7 +759,7 @@ function openauditwin(title, url, saveurl, okbutton, backbutton, closebutton) {
 			}
 		} ]
 
-	}).zindex();
+	});
 }
 /*获取Cookie值*/
 function getCookie(c_name)
@@ -733,12 +776,38 @@ function getCookie(c_name)
 	}
 	return ""
 }
+/* 设置 cookie  */
+function setCookie(c_name, value, expiredays){
+	var exdate=new Date();
+	exdate.setDate(exdate.getDate() + expiredays);
+	document.cookie=c_name+ "=" + escape(value) + ((expiredays==null) ? "" : ";expires="+exdate.toGMTString());
+}
+
+function createTabId(str){
+　　　　var val="";
+　　　　for(var i = 0; i < str.length; i++){
+　　　　　　　　val += str.charCodeAt(i).toString(16);
+　　　　}
+　　　　return val;
+　　}
 // 添加标签
 function addOneTab(subtitle, url, icon) {
 	var indexStyle = getCookie("JEECGINDEXSTYLE");
-	if(indexStyle=='sliding'||indexStyle=='bootstrap'||indexStyle=='ace'){
+	if(indexStyle=='sliding'||indexStyle=='bootstrap'){
 		//shortcut和bootstrap风格的tab跳转改为直接跳转
 		window.location.href=url;
+	}else if(indexStyle=='acele'||indexStyle=='ace'){
+		var id = "";
+		//if(url.indexOf("=")!=-1){
+		//	id = url.substring(url.indexOf("=")+1);
+		//}else{
+			id = createTabId(subtitle);
+		//}
+		window.top.addTabs({id:id,title:subtitle,close: true,url: url});
+	}else if(indexStyle=='hplus'){
+		var id = "";
+		id = createTabId(subtitle);
+		window.top.addTabs({id:id,title:subtitle,close: true,url: url});
 	}else{
 		if (icon == '') {
 			icon = 'icon folder';
@@ -808,7 +877,7 @@ function closetab(title) {
 //popup  
 //object: this  name:需要选择的列表的字段  code:动态报表的code
 function inputClick(obj,name,code) {
-	 $.dialog.setting.zIndex = 2002;
+	 $.dialog.setting.zIndex = getzIndex(true);
 	 if(name==""||code==""){
 		 alert("popup参数配置不全");
 		 return;
@@ -816,6 +885,7 @@ function inputClick(obj,name,code) {
 	 if(typeof(windowapi) == 'undefined'){
 		 $.dialog({
 				content: "url:cgReportController.do?popup&id="+code,
+				zIndex: getzIndex(),
 				lock : true,
 				title:"选择",
 				width:800,
@@ -844,10 +914,11 @@ function inputClick(obj,name,code) {
 			    },
 			    cancelVal: '关闭',
 			    cancel: true /*为true等价于function(){}*/
-			}).zindex();
+			});
 		}else{
 			$.dialog({
 				content: "url:cgReportController.do?popup&id="+code,
+				zIndex: getzIndex(),
 				lock : true,
 				title:"选择",
 				width:800,
@@ -877,7 +948,7 @@ function inputClick(obj,name,code) {
 			    },
 			    cancelVal: '关闭',
 			    cancel: true /*为true等价于function(){}*/
-			}).zindex();
+			});
 		}
 }
 /*
@@ -887,12 +958,13 @@ function inputClick(obj,name,code) {
 	url：弹出页面的Url
 */
 function popClick(obj,name,url) {
-	 $.dialog.setting.zIndex = 2001;
+	 $.dialog.setting.zIndex = getzIndex(true);
 	var names = name.split(",");
 	var objs = obj.split(",");
 	 if(typeof(windowapi) == 'undefined'){
 		 $.dialog({
 				content: "url:"+url,
+				zIndex: getzIndex(),
 				lock : true,
 				title:"选择",
 				width:700,
@@ -929,10 +1001,11 @@ function popClick(obj,name,url) {
 			    },
 			    cancelVal: '关闭',
 			    cancel: true /*为true等价于function(){}*/
-			}).zindex();
+			});
 		}else{
 			$.dialog({
 				content: "url:"+url,
+				zIndex: getzIndex(),
 				lock : true,
 				title:"选择",
 				width:700,
@@ -970,7 +1043,7 @@ function popClick(obj,name,url) {
 			    },
 			    cancelVal: '关闭',
 			    cancel: true /*为true等价于function(){}*/
-			}).zindex();
+			});
 		}
 }
 /**
@@ -1006,3 +1079,51 @@ function jeecgAutoParse(data){
     	});
 			return parsed;
 }
+//add--start--Author:xugj date:20160531 for: TASK #1089 【demo】针对jeecgdemo，实现一个新的页面方式
+/**
+ * 更新跳转新页面
+ * @param title 编辑框标题 未实现标题改变
+ * @param addurl//目标页面地址
+ * @param id//主键字段
+ */
+function updateNotCreateWin(title,url, id,isRestful) {
+	var rowsData = $('#'+id).datagrid('getSelections');
+	if (!rowsData || rowsData.length==0) {
+		tip('请选择编辑项目');
+		return;
+	}
+	if (rowsData.length>1) {
+		tip('请选择一条记录再编辑');
+		return;
+	}
+	if(isRestful!='undefined'&&isRestful){
+		url += '/'+rowsData[0].id;
+	}else{
+		url += '&id='+rowsData[0].id;
+	}
+	window.location.href=url
+}
+/**
+ * 查看详情跳转新页面
+ * @param title 编辑框标题 未实现标题改变
+ * @param id//主键字段
+ */
+function viewNotCreateWin(title,url, id,isRestful)
+{
+	var rowsData = $('#'+id).datagrid('getSelections');
+	if (!rowsData || rowsData.length==0) {
+		tip('请选择查看项目');
+		return;
+	}
+	if (rowsData.length>1) {
+		tip('请选择一条记录再查看');
+		return;
+	}
+	if(isRestful!='undefined'&&isRestful){
+		url += '/'+rowsData[0].id;
+	}else{
+		url += '&id='+rowsData[0].id;
+	}
+	window.location.href=url
+}
+//add--end--Author:xugj date:20160531 for: TASK #1089 【demo】针对jeecgdemo，实现一个新的页面方式

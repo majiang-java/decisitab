@@ -153,7 +153,6 @@ public class FileController extends BaseController {
 		AjaxJson j = new AjaxJson();
 		try{
 			String typeCode = request.getParameter("typeid");
-			String typeid = templateMangerService.findIdByCode(typeCode);
 			logger.info("upload-》1. build an iterator");
 			Iterator<String> itr = request.getFileNames();
 			MultipartFile mpf = null;
@@ -178,8 +177,7 @@ public class FileController extends BaseController {
 				logger.info("upload-》文件保存全路径" + savePath);
 				FileCopyUtils.copy(mpf.getBytes(), new File(savePath));
 				logger.info("copy file to local disk (make sure the path e.g. D:/temp/files exists)");
-				
-				templateMangerService.process(new File(savePath),typeid);
+				templateMangerService.process(new File(savePath),typeCode);
 				j.setMsg("上传决策表成功");
 				j.setSuccess(true);
 				logger.info("2.4 add to files");
@@ -195,5 +193,11 @@ public class FileController extends BaseController {
 		}
 		return j;
 	}
+	
+	@RequestMapping(params = "mainPage", method = { RequestMethod.GET, RequestMethod.POST })
+	public ModelAndView mainPage(HttpServletResponse response, String index) {
+		return new ModelAndView("main/firstPage");
+	}
+	
 
 }

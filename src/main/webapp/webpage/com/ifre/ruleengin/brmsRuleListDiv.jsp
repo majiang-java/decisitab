@@ -21,7 +21,7 @@ $(function() {
         rownumbers: true,
         singleSelect: true,
         fitColumns: true,
-        striped: false,
+        striped: true,
         showFooter: true,
         frozenColumns: [[]],
         columns: [[{
@@ -251,7 +251,7 @@ function searchReset(name) {
 				title="组织机构">组织机构：</span><input id="ccc" name="orgId" value=""></span><span
 				style="display: -moz-inline-box; display: inline-block;"><span
 				style="vertical-align: middle; display: -moz-inline-box; display: inline-block; width: 80px; text-align: right; text-overflow: ellipsis; -o-text-overflow: ellipsis; overflow: hidden; white-space: nowrap;"
-				title="知识库">知识库：</span><select name="knowId" WIDTH="100"
+				title="产品">产品：</span><select name="knowId" WIDTH="100"
 				style="width: 134px">
 					<option value="">---请选择---</option>
 					<option value="4028d0f057adfbfa0157ae0750ed0017">124</option>

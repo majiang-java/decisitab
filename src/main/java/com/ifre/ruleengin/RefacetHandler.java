@@ -7,6 +7,8 @@ package com.ifre.ruleengin;
 
 import java.lang.reflect.Method;
 
+import com.ifre.util.ReflectionUtil;
+
 public class RefacetHandler {
 	
 	/**
@@ -54,11 +56,14 @@ public class RefacetHandler {
 	     Class<? extends Object> ownerClass = owner.getClass();   
 	    
 	     Method method = null;
-	   
+	     
 	     if("int".equals(type)){
 	    	 method = ownerClass.getMethod(methodName, int.class);
 	     }else if("double".equals(type)){
 	    	 method = ownerClass.getMethod(methodName, double.class);
+	     }else if("list".equals(type)){
+	         Class<?> clazz=  ReflectionUtil.getFieldClass(owner.getClass(), "rejectReason");
+	    	 method = ownerClass.getMethod(methodName,clazz);
 	     }else{
 			Class[] argsClass = new Class[args.length];
 			for (int i = 0, j = args.length; i < j; i++) {

@@ -11,8 +11,10 @@ import org.jeecgframework.core.common.hibernate.qbc.CriteriaQuery;
 import org.jeecgframework.core.common.model.json.AjaxJson;
 import org.jeecgframework.core.common.model.json.DataGrid;
 import org.jeecgframework.core.constant.Globals;
+import org.jeecgframework.core.util.ResourceUtil;
 import org.jeecgframework.core.util.StringUtil;
 import org.jeecgframework.tag.core.easyui.TagUtil;
+import org.jeecgframework.web.system.pojo.base.TSUser;
 import org.jeecgframework.web.system.service.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -76,7 +78,7 @@ public class BizObjController extends BaseController {
 	public ModelAndView list(HttpServletRequest request) {
 		return new ModelAndView("com/ifre/brms/bizObjList");
 	}
-
+	
 	/**
 	 * easyui AJAX请求数据
 	 * 
@@ -99,6 +101,12 @@ public class BizObjController extends BaseController {
 			sql += "and ob.name like '%"+bizObj.getName()+"%'";
 		}
 		CriteriaQuery cq = new CriteriaQuery(BizObjEntity.class, dataGrid);
+		//机构过滤-后台实现
+		TSUser tSUser = ResourceUtil.getSessionUserName();
+		if(!"A01".equals(tSUser.getCurrentDepart().getOrgCode())){
+			cq.eq("orgCode", tSUser.getSysCompanyCode());
+		} 
+		cq.add();
 		//查询条件组装器
 		org.jeecgframework.core.extend.hqlsearch.HqlGenerateUtil.installHql(cq, bizObj);
 		this.bizObjService.getDataGridAReturn(cq, true,sql);

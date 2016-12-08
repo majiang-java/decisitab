@@ -8,7 +8,7 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 	<!-- /JeecgWService -->
-	<jaxws:endpoint id="jeecgWServiceI" implementor="org.jeecgframework.web.demo.ws.test.JeecgWServiceImpl" address="/JeecgWService" />
+	<!-- jaxws:endpoint id="jeecgWServiceI" implementor="org.jeecgframework.web.demo.ws.test.JeecgWServiceImpl" address="/JeecgWService" / -->
 	<!-- /JeecgWDemoService -->
-	<jaxws:endpoint id="jeecgWDemoServiceI" implementor="org.jeecgframework.web.demo.ws.test.JeecgWDemoServiceImpl" address="/JeecgWDemoService" />
+	<!-- jaxws:endpoint id="jeecgWDemoServiceI" implementor="org.jeecgframework.web.demo.ws.test.JeecgWDemoServiceImpl" address="/JeecgWDemoService" / -->
 </beans>

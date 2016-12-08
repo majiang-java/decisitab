@@ -1,0 +1,58 @@
+body{
+	font: 14px/1.5 simsun;
+	font-family: lato,FZLTXHK,'Microsoft YaHei';
+}
+.panel-header{
+	line-height: 28px;
+    padding-left: 10px;
+    border-bottom: 1px solid #b5d6f5;
+    background: #d7e7f6;
+}
+
+.datagrid-row-alt{
+	 background: #e7f1fa;
+}
+
+.datagrid-row-over{
+	background: #0a8cdc;
+    color: #fff;
+}
+.datagrid-row-over a{
+	 color: #fff;
+	 	background: #0a8cdc;
+}
+.datagrid-header td{
+    border-right: 1px solid #e6e6e6;
+    border-left: 1px solid #fafafa;
+    border-bottom: 1px solid #eaeaea;
+    background: #f3f3f3;
+    font-weight: normal;
+    text-align: left;
+}
+
+.datagrid-body td{
+	border-right: 1px solid #e6e6e6;
+    border-left: 1px solid #fafafa;
+}
+.icon-newupload{
+	background:url('img/list_upload.png') no-repeat left center;
+}
+.icon-newupload:hover{
+	background:url('img/list_upload_on.png') no-repeat left center;
+}
+.icon-newedit{
+	background:url('img/list_edit.png') no-repeat left center;
+}
+.icon-newedit:hover{
+	background:url('img/list_edit_on.png') no-repeat left center;
+}
+
+.easyui-linkbutton{
+	margin-right:10px;
+}
+.datagrid-row {
+        height: 32px;
+}
+.datagrid-cell{
+	font-size:14px;
+}

@@ -8,21 +8,16 @@
 </style>
 <div class="easyui-layout" fit="true">
   <div region="center" style="padding:1px;">
-  <t:datagrid name="brmsRuleTableList" title="决策表" actionUrl="brmsRuleTableController.do?datagrid" idField="id" fit="true"  queryMode="group">
-   <t:dgCol title="编号" field="id" hidden="true"></t:dgCol>
- 
-   <t:dgCol title="所属机构" field="orgId" dictionary="orgId"  width="120" query="true"></t:dgCol>
-   <t:dgCol title="产品" field="knowId" dictionary="kKnwldgId"  width="120" query="true"></t:dgCol>
-   <t:dgCol title="产品" field="prodId" dictionary="prodId" query="true"  width="120"></t:dgCol>
-   <t:dgCol title="包全名" field="pkgAllName"   width="120"></t:dgCol>
-   <t:dgCol title="名称" field="name"   width="120"></t:dgCol>
-   <t:dgCol title="注释" field="note"   width="120"></t:dgCol>
-   <t:dgCol title="优先级" field="salience"   width="120"></t:dgCol>
+  <t:datagrid name="brmsRuleTableList" title="决策表" actionUrl="brmsRuleTableController.do?ruleTreeGrid&prodType=2" idField="id" fit="true"  queryMode="group" treegrid="true" pageSize="20">
+   <t:dgCol title="编号" field="id" treefield="id" hidden="true"></t:dgCol>
+   <t:dgCol title="机构" field="orgId"  dictionary="orgId" query="true" treefield="note" width="120"></t:dgCol>
+   <t:dgCol title="产品" field="prodId" treefield="text" query="true" width="120"></t:dgCol>
+   <t:dgCol title="优先级" field="salience" treefield="src"   width="120"></t:dgCol>
    <t:dgCol title="操作" field="opt" width="100"></t:dgCol>
-   <t:dgDelOpt title="删除" url="brmsRuleTableController.do?del&id={id}" operationCode="del"/>
-   <t:dgToolBar title="上传" icon="icon-newupload" url="fileController.do?upload" funname="add" operationCode="upload"></t:dgToolBar>
+   <t:dgDelOpt title="删除" url="brmsRuleTableController.do?del&id={id}&src={salience}" operationCode="del"/>
+   <t:dgToolBar title="创建" icon="icon-edit" url="brmsRuleTableController.do?createDecitable&prodType=2" funname="add" operationCode="add"></t:dgToolBar>
    <t:dgToolBar title="编辑" icon="icon-edit" url="brmsRuleTableController.do?editDecitable"  width="100%" height="100%" funname="update" operationCode="update"></t:dgToolBar>
-   <t:dgToolBar title="创建" icon="icon-edit" url="brmsRuleTableController.do?createDecitable" funname="add" operationCode="add"></t:dgToolBar>
+  <%--  <t:dgToolBar title="上传" icon="icon-newupload" url="fileController.do?upload" funname="add" operationCode="upload"></t:dgToolBar> --%>
    <%-- <t:dgToolBar title="查看" icon="icon-search" url="brmsRuleTableController.do?addorupdate" funname="detail" height="40%"></t:dgToolBar> --%>
   </t:datagrid>
   </div>
@@ -39,4 +34,6 @@
        }
    });   
  });
+ 
+
  </script>

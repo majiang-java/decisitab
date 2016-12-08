@@ -1,5 +1,6 @@
 package com.ifre.controller.ruleengin;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jeecgframework.core.common.controller.BaseController;
 import org.jeecgframework.core.common.hibernate.qbc.CriteriaQuery;
@@ -19,24 +21,22 @@ import org.jeecgframework.core.util.ResourceUtil;
 import org.jeecgframework.core.util.StringUtil;
 import org.jeecgframework.tag.core.easyui.TagUtil;
 import org.jeecgframework.web.system.pojo.base.TSDepart;
-import org.jeecgframework.web.system.pojo.base.TSType;
-import org.jeecgframework.web.system.pojo.base.TSTypegroup;
 import org.jeecgframework.web.system.pojo.base.TSUser;
 import org.jeecgframework.web.system.service.SystemService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ifre.entity.brms.BizObjEntity;
 import com.ifre.entity.brms.KnwldgLibEntity;
+import com.ifre.entity.brms.RulePckgEntity;
 import com.ifre.entity.brms.RuleProdEntity;
 import com.ifre.entity.ruleengin.BrmsRuleTableEntity;
-import com.ifre.entity.template.TemplateRuleTableEntity;
-import com.ifre.ruleengin.data.TamplateModelObjectFactory;
 import com.ifre.service.brms.ProcessExcelServicel;
 import com.ifre.service.brms.TemplateMangerServiceI;
 import com.ifre.service.rights.BrmsRightsServiceI;
@@ -92,12 +92,20 @@ public class BrmsRuleTableController extends BaseController {
 	 */
 	@RequestMapping(params = "list")
 	public ModelAndView list(HttpServletRequest request) {
-		return new ModelAndView("com/ifre/ruleengin/brmsRuleTableList");
+		String prodType = request.getParameter("prodType");
+        request.setAttribute("prodType", prodType);
+		/*if (prodType != null &&  prodType.equals("1")) {
+			return new ModelAndView("com/ifre/ruleengin/brmsModelTableList");
+		} else {
+			return new ModelAndView("com/ifre/ruleengin/brmsRuleTableList");
+		} */
+		return new ModelAndView("com/ifre/ruleengin/ruleTableList");
+		
 	}
 
 	@RequestMapping(params = "formerList")
 	public ModelAndView formerList(HttpServletRequest request) {
-		return new ModelAndView("com/ifre/ruleengin/brmsRuleListDiv");
+		return new ModelAndView("com/ifre/ruleengin/ruleTableList");
 	}
 	
 	/**
@@ -119,6 +127,7 @@ public class BrmsRuleTableController extends BaseController {
 	@RequestMapping(params = "createDecitable")
 	public ModelAndView createDecitable(BrmsRuleTableEntity brmsRuleTable,HttpServletRequest request) {
 		request.setAttribute("id", brmsRuleTable.getId());
+		request.setAttribute("prodType", request.getParameter("prodType"));
 		return new ModelAndView("com/ifre/ruleengin/createModel");
 	}
 	
@@ -133,7 +142,9 @@ public class BrmsRuleTableController extends BaseController {
 	public String getDecitableData(String id,HttpServletRequest request) {
 		AjaxJson j = new AjaxJson();
 		try{
-			Boolean rightResult = rightsService.labelRights("decitableHead", request);
+//			Boolean rightResult = rightsService.labelRights("decitableHead", request);
+			//屏蔽表头
+			Boolean rightResult = false;
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("decitableHead", rightResult);
 			j.setAttributes(map);
@@ -151,14 +162,14 @@ public class BrmsRuleTableController extends BaseController {
 
 	
 	/**
-	 * easyui AJAX请求数据
+	 * easyui AJAX请求数据-20161028检验，没有地方使用该方法
 	 * 
 	 * @param request
 	 * @param response
 	 * @param dataGrid
 	 * @param user
 	 */
-
+	@Deprecated
 	@RequestMapping(params = "datagrid")
 	public void datagrid(BrmsRuleTableEntity brmsRuleTable,HttpServletRequest request, HttpServletResponse response, DataGrid dataGrid) {
 		String sql=" ";
@@ -181,7 +192,72 @@ public class BrmsRuleTableController extends BaseController {
 		TagUtil.datagrid(response, dataGrid);
 	}
    
-	
+	@RequestMapping(params = "selfRuleTreeGrid")
+	@ResponseBody
+	public Object selfRuleTreeGrid(RuleProdEntity ruleProdEntry,HttpServletRequest request, HttpServletResponse response){
+		TSUser tSUser = ResourceUtil.getSessionUserName();
+		String hql;
+		String orgId = request.getParameter("orgId");
+		String prodId = request.getParameter("prodId");
+		String prodType = request.getParameter("prodType");
+		logger.info("orgId:" +orgId);
+		logger.info("prodId:" +prodId);
+		List<TSDepart> departList = brmsRuleTableService.findHql("from TSDepart");
+		StringBuilder sb = new StringBuilder();
+		if("A01".equals(tSUser.getCurrentDepart().getOrgCode())){
+			hql = "from RuleProdEntity where 1 = 1 and type = "+prodType;
+    	}else{
+    		hql = "from RuleProdEntity where 1= 1 and  type = "+prodType +" and orgId= '"+tSUser.getCurrentDepart().getId()+"' ";
+    	} 
+		sb.append(hql);
+		if(StringUtils.isNotEmpty(orgId)){
+			sb.append(" and orgId = '"+ orgId+"'");
+		}
+		
+		if(StringUtils.isNotEmpty(prodId)){
+			sb.append(" and name like '%"+ prodId+"%'");
+		}
+    	List<RuleProdEntity> prodList = brmsRuleTableService.findHql(sb.toString());
+		
+		JSONArray jsonArray = new JSONArray();
+		for (RuleProdEntity ruleProdEntity : prodList) {
+			List<BrmsRuleTableEntity> ruleList = brmsRuleTableService.findHql("from BrmsRuleTableEntity where prodId =?", ruleProdEntity.getId());
+			ruleProdEntity.setRuleTables(ruleList);
+			JSONObject jb = new JSONObject();
+			jb.put("text", ruleProdEntity.getName());
+			for (TSDepart depart : departList) {
+				if(ruleProdEntity.getOrgId().equals(depart.getId())){
+					jb.put("note", depart.getDepartname());
+				}
+			}
+			jb.put("id", ruleProdEntity.getId());
+			if(ruleList.size() >0){
+				
+				jb.put("state", "closed");
+				jsonArray.add(jb);
+			}else{
+				jb.put("state", "open");
+			}
+			
+			
+			for (BrmsRuleTableEntity brmsRuleTableEntity : ruleList) {
+				JSONObject subJb = new JSONObject();
+				subJb.put("text", brmsRuleTableEntity.getName());
+				subJb.put("id", brmsRuleTableEntity.getId());
+				subJb.put("src", brmsRuleTableEntity.getSalience());
+				subJb.put("_parentId", ruleProdEntity.getId());
+				jsonArray.add(subJb);
+			}
+			
+		}
+		
+		JSONObject returnJB = new JSONObject();
+		returnJB.put("total", jsonArray.size());
+		returnJB.put("rows", jsonArray);
+		
+		return returnJB;
+	}
+	@Deprecated
 	@RequestMapping(params = "ruleTreeGrid")
 	@ResponseBody
 	public Object ruleTreeGrid(RuleProdEntity ruleProdEntry,HttpServletRequest request, HttpServletResponse response, TreeGrid treegrid) {
@@ -211,39 +287,95 @@ public class BrmsRuleTableController extends BaseController {
 		
 		return returnJB;*/
 		
-		List<TSTypegroup> list = brmsRuleTableService.findHql("from TSTypegroup where typegroupname = ?", "模版类型");
+		//机构过滤-后台实现-待验证
+		TSUser tSUser = ResourceUtil.getSessionUserName();
+		String hql;
+		String orgId = request.getParameter("orgId");
+		String prodId = request.getParameter("prodId");
+		String search = request.getParameter("search");
+		if ("1".equals(request.getParameter("search"))) {
+			treegrid.setId(null);
+		}
+		if("A01".equals(tSUser.getCurrentDepart().getOrgCode())){
+			hql = "from BrmsRuleTableEntity where prodId = ?";
+    	}else{
+    		hql = "from BrmsRuleTableEntity where prodId = ? and orgId=?";
+    	} 
 		
-		List<TSType> types = list.get(0).getTSTypes();
+		String prodType = request.getParameter("prodType");
 		List<TreeGrid> grids = new ArrayList<TreeGrid>();
 	    if(treegrid.getId()!= null){
-	    	TSType tStype = brmsRuleTableService.getEntity(TSType.class, treegrid.getId());
-	    	List<BrmsRuleTableEntity> tempList = brmsRuleTableService.findHql("from BrmsRuleTableEntity where type_id = ?", treegrid.getId());
-	    	for (BrmsRuleTableEntity templateRuleTableEntity : tempList) {
-	    		TreeGrid temptreegrid = new TreeGrid();
-	    		temptreegrid.setId(templateRuleTableEntity.getId());
-	    		temptreegrid.setText(templateRuleTableEntity.getName());
-	    		temptreegrid.setParentId(tStype.getId());
-	    		temptreegrid.setParentText(tStype.getTypename());
-	    		grids.add(temptreegrid);
+	    	StringBuilder sb = new StringBuilder();
+	    	sb.append("from RuleProdEntity where id = '"+treegrid.getId()+"'");
+	    	
+
+	    
+			if(StringUtils.isNotEmpty(orgId)){
+				sb.append(" and orgId = '"+ orgId+"'");
 			}
-		}
-		if(treegrid.getId() ==null){
-			for (TSType tsType : types) {
-				List<BrmsRuleTableEntity> tempList = brmsRuleTableService.findHql("from BrmsRuleTableEntity where type_id = ?", tsType.getId());
-				TreeGrid temptreegrid = new TreeGrid();
-				temptreegrid.setId(tsType.getId());
-				temptreegrid.setText(tsType.getTypename());
-				temptreegrid.setParentText(tsType.getTypename());
-				if(tempList != null && !tempList.isEmpty())
-				temptreegrid.setState("closed");
-				grids.add(temptreegrid);
+			
+			if(StringUtils.isNotEmpty(prodId)){
+				sb.append(" and prodId like %"+ prodId+"%");
+			}
+	    	List<RuleProdEntity> prodList = brmsRuleTableService.findHql(sb.toString());
+	    	RuleProdEntity prod = null;
+		    if(!prodList.isEmpty()){
+		    	prod = prodList.get(0);
+		    	
+				List<BrmsRuleTableEntity> tempList;
+		    	if("A01".equals(tSUser.getCurrentDepart().getOrgCode())){
+		    		tempList = brmsRuleTableService.findHql(hql, prod.getId());
+		    	}else{
+		    		tempList = brmsRuleTableService.findHql(hql, prod.getId(),tSUser.getCurrentDepart().getId());
+		    	}
+		    	for (BrmsRuleTableEntity templateRuleTableEntity : tempList) {
+		    		TreeGrid temptreegrid = new TreeGrid();
+		    		temptreegrid.setId(templateRuleTableEntity.getId());
+		    		temptreegrid.setText(templateRuleTableEntity.getName());
+		    		temptreegrid.setSrc(String.valueOf(templateRuleTableEntity.getSalience()));
+		    		temptreegrid.setParentId(prod.getId());
+		    		temptreegrid.setParentText(prod.getName());
+		    		grids.add(temptreegrid);
+				}
+	    	}
+		}else {
+			StringBuilder sb = new StringBuilder();
+			sb.append("from RuleProdEntity where type = " + Integer.parseInt(prodType));
+			if(StringUtils.isNotEmpty(orgId)){
+				sb.append(" and orgId = '"+ orgId+"'");
+			}
+			if(StringUtils.isNotEmpty(prodId)){
+				sb.append(" and prodId like %"+ prodId+"%");
+			}
+			List<RuleProdEntity> list = brmsRuleTableService.findHql(sb.toString());
+			
+			for (RuleProdEntity prod : list) {
+				List<BrmsRuleTableEntity> tempList;
+				if("A01".equals(tSUser.getCurrentDepart().getOrgCode())){
+		    		tempList = brmsRuleTableService.findHql(hql, prod.getId());
+		    	}else{
+		    		tempList = brmsRuleTableService.findHql(hql, prod.getId(),tSUser.getCurrentDepart().getId());
+		    	}
+				if(tempList != null && !tempList.isEmpty()){
+					TreeGrid temptreegrid = new TreeGrid();
+					temptreegrid.setId(prod.getId());
+					temptreegrid.setText(prod.getName());
+					temptreegrid.setNote(prod.getOrgId());
+					temptreegrid.setParentText(prod.getName());
+					temptreegrid.setState("closed");
+					grids.add(temptreegrid);
+				}
+				
+				
 			}
 		}
 	
-		
+	    request.removeAttribute("search");
 		return grids;
 		
 	}
+	
+	
 	
 	@Deprecated
 	private void queryForName(BrmsRuleTableEntity table){
@@ -269,28 +401,58 @@ public class BrmsRuleTableController extends BaseController {
 	 * 
 	 * @return
 	 */
+	
 	@RequestMapping(params = "del")
 	@ResponseBody
-	public AjaxJson del(BrmsRuleTableEntity brmsRuleTable, HttpServletRequest request) {
+	@Transactional
+	public AjaxJson del(TreeGrid treeGrid, HttpServletRequest request) {
 		AjaxJson j = new AjaxJson();
-		brmsRuleTable = systemService.getEntity(BrmsRuleTableEntity.class, brmsRuleTable.getId());
+		try{
+			RuleProdEntity prodEntry = systemService.getEntity(RuleProdEntity.class, treeGrid.getId());
+			if(prodEntry!= null){
+				List<BrmsRuleTableEntity> tableList =  systemService.findHql("from BrmsRuleTableEntity where prodId=?", treeGrid.getId());
+				for (BrmsRuleTableEntity brmsRuleTableEntity : tableList) {
+					deleteSingleTable(brmsRuleTableEntity.getId());
+				}
+				List<BizObjEntity> bizObjectList = systemService.findHql("from BizObjEntity where prodId = ?", treeGrid.getId());
+				systemService.deleteAllEntitie(bizObjectList);
+				
+				List<RulePckgEntity> rulePckgList = systemService.findHql("from RulePckgEntity where prodId = ?", treeGrid.getId());
+				systemService.deleteAllEntitie(rulePckgList);
+				//初始化状态
+				prodEntry.setStatus("0");
+				systemService.updateEntitie(prodEntry);
+				j.setMsg("删除成功");
+				j.setSuccess(true);
+			}else{
+				deleteSingleTable(treeGrid.getId());
+				j.setMsg("删除成功");
+				j.setSuccess(true);
+			}
+		}catch(Exception e){
+			j.setMsg("删除失败");
+			j.setSuccess(false);
+		}
+		return j;
+	}
+
+	private void deleteSingleTable(String tableId) {
+		BrmsRuleTableEntity	brmsRuleTable = systemService.getEntity(BrmsRuleTableEntity.class, tableId);
 		message = "决策表删除成功";
 		brmsRuleTableService.delete(brmsRuleTable);
 		String delCondition = "delete from brms_rule_condition where rule_table_id = ?";
 		String delAction = "delete from brms_rule_action where rule_table_id = ?";
 		String delCondtionDetail = "delete from brms_condition_detail where rule_table_id = ?";
 		String delActionDetail = "delete from brms_action_detail where rule_table_id = ?";
-	//	brmsRuleTableService.executeSql(delTable, new Object[]{tableid});
+//	brmsRuleTableService.executeSql(delTable, new Object[]{tableid});
 		systemService.executeSql(delCondition, new Object[]{brmsRuleTable.getId()});
 		systemService.executeSql(delAction, new Object[]{brmsRuleTable.getId()});
 		systemService.executeSql(delCondtionDetail, new Object[]{brmsRuleTable.getId()});
 		systemService.executeSql(delActionDetail, new Object[]{brmsRuleTable.getId()});
 		systemService.addLog(message, Globals.Log_Type_DEL, Globals.Log_Leavel_INFO);
-		
-		j.setMsg(message);
-		return j;
 	}
 
+	
 	/**
 	 * 添加决策表
 	 * 
@@ -312,6 +474,12 @@ public class BrmsRuleTableController extends BaseController {
 				logger.error("决策表更新成功",e);
 				j.setMsg("决策表更新失败");
 				j.setSuccess(false);
+			}
+			try {
+				templateMangerService.syncDecisitabToData(id);
+			} catch (Exception e) {
+				logger.error(e);
+				e.printStackTrace();
 			}
 			return j;
 		}
@@ -387,18 +555,45 @@ public class BrmsRuleTableController extends BaseController {
 	}
 	
 	/**
-	 * 获取机构 知识库 
+	 * 获取机构 产品 
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(params = "getIndustMsg")
 	@ResponseBody
-	public String getIndustMsg(){
+	public String getIndustMsg(HttpServletRequest req){
+		String prodType = req.getParameter("prodType");
 		List list = new ArrayList();
-		String hql = "from TSDepart where 1= 1"; 
+		//String hql = "from TSDepart where 1= 1 and status = 1 and startDate <= ? and endDate >= ?"; 
 		//第一层
-		List<TSDepart> departList = systemService.findHql(hql, new Object[]{});
-		for (TSDepart tsDepart : departList) {
+		TSUser tSUser = ResourceUtil.getSessionUserName();
+		
+		Date curr = new Date();
+	//	List<TSDepart> departList = systemService.findHql(hql, new Object[]{curr,curr});
+		CriteriaQuery cq = new CriteriaQuery(TSDepart.class);
+		if (!"A01".equals(tSUser.getCurrentDepart().getOrgCode())) {
+			cq.eq("orgCode", tSUser.getSysCompanyCode());
+		}
+	
+		tSUser = ResourceUtil.getSessionUserName();
+		if (!"A01".equals(tSUser.getCurrentDepart().getOrgCode())) {
+			cq.eq("id", tSUser.getCurrentDepart().getId());
+		} else {
+			cq.isNull("TSPDepart");
+		}
+		
+		cq.eq("status", 1);
+		cq.add();
+		List<TSDepart> departsList = new ArrayList<TSDepart>();
+		List<TSDepart> dList = systemService.getListByCriteriaQuery(cq, false);
+		for (TSDepart tsDepart : dList) {
+			departsList.add(tsDepart);
+			if(!tsDepart.getTSDeparts().isEmpty()){
+				departsList.addAll(tsDepart.getTSDeparts());
+			}
+		}
+	
+		for (TSDepart tsDepart : departsList) {
 			Map depart = new HashMap();
 			String subLib = "from KnwldgLibEntity where orgId = ? and STATUS = 1 ";
 			List subLibListContainer = new ArrayList();
@@ -407,7 +602,7 @@ public class BrmsRuleTableController extends BaseController {
 				Map knowLib = new HashMap();
 				knowLib.put("n", sublib.getName() );
 				knowLib.put("v", sublib.getId());
-				String subProp = "from RuleProdEntity where kknwldgId = ?";
+				String subProp = "from RuleProdEntity where kknwldgId = ? and rightStatus = 1 and type = " + Integer.parseInt(prodType);
 				List subprodContainer = new ArrayList();
 				List<RuleProdEntity> subPropList = systemService.findHql(subProp, new Object[]{sublib.getId()});
 				for (RuleProdEntity ruleProdEntity : subPropList) {
@@ -431,6 +626,38 @@ public class BrmsRuleTableController extends BaseController {
 		return jb.toString();
 	}
 	
+	//同步数据
+	@RequestMapping(params = "doSyncDataModel")
+	@ResponseBody
+	public AjaxJson doSyncDataModel(RuleProdEntity ruleProd, HttpServletRequest request){
+		AjaxJson j = new AjaxJson();
+		try{
+			templateMangerService.syncDataToDecisitab(ruleProd);
+			j.setMsg("数据同步成功");
+			j.setSuccess(true);
+		}catch(Exception e){
+			j.setMsg(e.getMessage());
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+/*	@RequestMapping(params = "doSyncDecitab")
+	@ResponseBody
+	public AjaxJson doSyncDecitab(RuleProdEntity ruleProd, HttpServletRequest request){
+		AjaxJson j = new AjaxJson();
+		try{
+			templateMangerService.syncDecisitabToData(ruleProd);
+			j.setMsg("数据同步成功");
+			j.setSuccess(true);
+		}catch(Exception e){
+			j.setMsg(e.getMessage());
+			j.setSuccess(false);
+		}
+		return j;
+		
+	}*/
+	
 	@RequestMapping(params = "doCreateModel")
 	@ResponseBody
     public  AjaxJson doCreateModel(BrmsRuleTableEntity brmsRuleTable, HttpServletRequest req){
@@ -438,9 +665,20 @@ public class BrmsRuleTableController extends BaseController {
     	String departId = req.getParameter("departId");
     	String knowId = req.getParameter("knowId");
     	String prodId = req.getParameter("prodId");
+    	String isUse = req.getParameter("isUse");
+    	String typeId= req.getParameter("typeid");
     	
-    	String typeCode= req.getParameter("typeid");
-    	templateMangerService.cloneTemplateToBrms(departId,knowId,prodId,typeCode);
+    	if(!brmsRuleTableService.isExist(departId,knowId,prodId)){
+    		j.setSuccess(false);
+    		j.setMsg("此决策方案中已经包含规则，无法创建");
+    	}else{
+    		try{
+    			templateMangerService.cloneTemplateToBrms(departId,knowId,prodId,typeId,isUse);
+    		}catch(Exception e){
+    			j.setSuccess(false);
+        		j.setMsg(e.getMessage());
+    		}
+    	}
     	
     	return j;
     	//templateMangerService.

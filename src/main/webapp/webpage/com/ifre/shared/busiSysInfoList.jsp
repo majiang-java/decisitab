@@ -11,6 +11,7 @@
    <t:dgCol title="签名秘钥" field="signKey"   width="100"></t:dgCol>
    <t:dgCol title="加密秘钥" field="encryptKey"   width="100"></t:dgCol>
    <t:dgCol title="回调地址" field="notifyUrl"   width="100"></t:dgCol>
+   <t:dgCol title="绑定机构编码" field="orgCode"   width="100"></t:dgCol>
    <t:dgCol title="操作" field="opt" width="100"></t:dgCol>
    <t:dgDelOpt title="删除" url="busiSysInfoController.do?del&id={id}" />
    <t:dgToolBar title="录入" icon="icon-add" url="busiSysInfoController.do?addorupdate" funname="add"></t:dgToolBar>

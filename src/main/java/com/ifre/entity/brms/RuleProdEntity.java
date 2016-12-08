@@ -66,7 +66,22 @@ public class RuleProdEntity implements java.io.Serializable {
 	/**修改时间*/
 	private java.util.Date updateDate;
 	
+	/**方案类别*/
+	private java.lang.Integer type;	
+	
+	/**方案权限*/
+	private java.lang.Integer rightStatus;	
+	
+	/**模板类别*/
+	private java.lang.String tempType;	
+	
+	private java.lang.String packStatus;
+	
+	private java.lang.String publishStatus;
+	
 	private List<BrmsRuleTableEntity> ruleTables = new ArrayList<BrmsRuleTableEntity>();
+	
+	private List<VarTypegroup> varTypegroup = new ArrayList<VarTypegroup>();
 	/**
 	 *方法: 取得java.lang.String
 	 *@return: java.lang.String  ID
@@ -329,6 +344,91 @@ public class RuleProdEntity implements java.io.Serializable {
 	public void setRuleTables(List<BrmsRuleTableEntity> ruleTables) {
 		this.ruleTables = ruleTables;
 	}
+
+	/**
+	 * type
+	 * @return  the type
+	*/
+	@Column(name ="TYPE",nullable=true,precision=10,scale=0)
+	public java.lang.Integer getType() {
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(java.lang.Integer type) {
+		this.type = type;
+	}
+
+	/**
+	 * varTypegroup
+	 * @return  the varTypegroup
+	*/
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "ruleProdEntity")
+	public List<VarTypegroup> getVarTypegroup() {
+		return varTypegroup;
+	}
+
+	/**
+	 * @param varTypegroup the varTypegroup to set
+	 */
+	public void setVarTypegroup(List<VarTypegroup> varTypegroup) {
+		this.varTypegroup = varTypegroup;
+	}
+
+	/**
+	 * rightStatus
+	 * @return  the rightStatus
+	*/
+	@Column(name ="RIGHT_STATUS",nullable=true,precision=10,scale=0)
+	public java.lang.Integer getRightStatus() {
+		return rightStatus;
+	}
+
+	/**
+	 * @param rightStatus the rightStatus to set
+	 */
+	
+	public void setRightStatus(java.lang.Integer rightStatus) {
+		this.rightStatus = rightStatus;
+	}
+
+	/**
+	 * tempType
+	 * @return  the tempType
+	*/
+	@Column(name ="TEMP_TYPE",nullable=true,length=20)
+	public java.lang.String getTempType() {
+		return tempType;
+	}
+
+	/**
+	 * @param tempType the tempType to set
+	 */
+	public void setTempType(java.lang.String tempType) {
+		this.tempType = tempType;
+	}
+
+	@Column(name ="PACK_STATUS",length=10)
+	public java.lang.String getPackStatus() {
+		return packStatus;
+	}
+	
+	public void setPackStatus(java.lang.String packStatus) {
+		this.packStatus = packStatus;
+	}
+
+
+	@Column(name ="PUBLISH_STATUS",length=20)
+	public java.lang.String getPublishStatus() {
+		return publishStatus;
+	}
+
+	public void setPublishStatus(java.lang.String publishStatus) {
+		this.publishStatus = publishStatus;
+	}
+	
 	
 	
 }

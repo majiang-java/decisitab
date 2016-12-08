@@ -525,7 +525,9 @@ public class CommonDao extends GenericBaseCommonDao implements ICommonDao, IGene
                 List nextChildList = new ArrayList(curChildList);
                 for (Object childObj : nextChildList) {
                     ComboTree t = comboTree(childObj, comboTreeModel, in, recursive);
-                    children.add(t);
+                    if(t.getStatus()!=null && t.getStatus() == 1){
+                    	children.add(t);
+                    }
                 }
                 tree.setChildren(children);
             }

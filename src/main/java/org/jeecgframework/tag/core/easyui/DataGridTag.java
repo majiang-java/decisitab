@@ -903,6 +903,7 @@ public class DataGridTag extends TagSupport {
 			sb.append("<input  id=\"_sqlbuilder\" name=\"sqlbuilder\"   type=\"hidden\" />");
 			// update by jg_renjie at 2016/1/11 for:TASK #823 增加form实现Form表单验证
 			sb.append("<form id='" + name + "Form'>");
+			sb.append("<input  id=\"isSearch\" name=\"isSearch\" value = \"1\"   type=\"hidden\" />");
 			sb.append("<link rel=\"stylesheet\" href=\"plug-in/Validform/css/style.css\" type=\"text/css\">");
 			sb.append("<link rel=\"stylesheet\" href=\"plug-in/Validform/css/tablefrom.css\" type=\"text/css\">");
 			sb.append(
@@ -1001,7 +1002,7 @@ public class DataGridTag extends TagSupport {
 									// CriteriaQuery(TSDepart.class);
 									// TSUser tSUser =
 									// ResourceUtil.getSessionUserName();
-									// if(!"admin".equals(tSUser.getUserName())){
+									// if(!"A01".equals(tSUser.getCurrentDepart().getOrgCode())){
 									// cq.eq("id",
 									// tSUser.getCurrentDepart().getId());
 									// }else{

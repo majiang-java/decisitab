@@ -244,7 +244,6 @@ function mainTest(){
 		
 		if(datec.success){
 			var res = datec.obj;
-			debugger;
 			var row = [];
 		/* 	for(var k in res) {
 				var a = {};
@@ -337,6 +336,8 @@ function mainTest(){
 				          ]],
 				          
 			});
+			var win = frameElement.api.opener;
+			win.reloadTable();
 		}else{
 			tip(datec.msg);
 		}

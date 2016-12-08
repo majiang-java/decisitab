@@ -5,17 +5,13 @@
  */
 package com.ifre.invoker.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.kie.api.KieServices;
-import org.kie.api.event.rule.DebugAgendaEventListener;
-import org.kie.api.event.rule.DebugRuleRuntimeEventListener;
-import org.kie.api.logger.KieRuntimeLogger;
 import org.kie.api.runtime.StatelessKieSession;
 
 import com.ifre.invoker.DecitabInvokerI;
@@ -34,10 +30,10 @@ public class AntifraudInvoker implements DecitabInvokerI{
     
     private static final String NULLVALUE = "无";
     
-    private Map<String,Object> hmcreate = new HashMap<String,Object>() ;
+    private Map<String,Object> hmcreate = new ConcurrentHashMap<String,Object>() ;
     
     @SuppressWarnings("rawtypes")
-	private List infactList = new ArrayList();
+	private List infactList = new CopyOnWriteArrayList();
     
     @SuppressWarnings({ "unchecked" })
 	@Override
@@ -80,7 +76,7 @@ public class AntifraudInvoker implements DecitabInvokerI{
 
 	    				RefacetHandler.invokeFieldMethod(obj, "setVarName", new Object[]{tempValue});
 	    				RefacetHandler.invokeFieldMethod(obj, "setVarValueCode", new Object[]{tempVarCode});
-	    				RefacetHandler.invokeFieldMethod(obj, "setVarCodeFreq", new Object[]{varCodeFreq},"int");
+	    				RefacetHandler.invokeFieldMethod(obj, "setVarCodeFreq", new Object[]{varCodeFreq},"double");
 	    				infactList.add(obj);
 					}
 	    			hmcreate.put("infacts", infactList);
@@ -111,7 +107,7 @@ public class AntifraudInvoker implements DecitabInvokerI{
 	        
 	       
 	        if ((infactList != null) && (infactList.size() > 0)) {
-	            RefacetHandler.invokeFieldMethod(loanAppObj,"setTotalScore",new Object[]{0},"int");
+	            RefacetHandler.invokeFieldMethod(loanAppObj,"setTotalScore",new Object[]{0},"double");
 	            infactList.add(loanAppObj);
 	            ksession.execute(infactList);
 	            infactList.clear();
@@ -140,7 +136,7 @@ public class AntifraudInvoker implements DecitabInvokerI{
 	        }
     	}catch(Exception e){
     		logger.error("执行规则错误");
-    		throw new Exception("");
+    		throw e;
     	}
     	return result;
     }

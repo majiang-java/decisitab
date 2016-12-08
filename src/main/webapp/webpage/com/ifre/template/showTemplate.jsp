@@ -97,7 +97,7 @@ $(function(){
 		  var curdata = JSON.stringify( ccp);
 		  var mergedata = JSON.stringify(getMergedArea());
 		  console.log("mergedata"+mergedata);
-		  $.post('brmsRuleTableController.do?saveDecitable', {id: id,data: curdata,mergedata:mergedata}, function (res) {
+		  $.post('templateMangerController.do?saveDecitable', {id: id,data: curdata,mergedata:mergedata}, function (res) {
 			    var response = JSON.parse(res);
 				
 			    if (response.success === true) {

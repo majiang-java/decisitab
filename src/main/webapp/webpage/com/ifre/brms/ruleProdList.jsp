@@ -7,24 +7,19 @@
 		<t:datagrid name="ruleProdList" title="决策方案" 	actionUrl="ruleProdController.do?datagrid" idField="id" fit="true" queryMode="group" sortOrder="desc" pageSize="20"
 		onDblClick="detail('查看','ruleProdController.do?addorupdate','ruleProdList',null,null)">
 			<t:dgCol title="编号" field="id" hidden="true"></t:dgCol>
+			<t:dgCol title="模版类型" field="tempType" hidden="true"></t:dgCol>
 			<t:dgCol title="所属机构" field="orgId" dictionary="orgId" width="120"
 				query="true"></t:dgCol>
 			<t:dgCol title="产品" field="kknwldgId" dictionary="kKnwldgId"
 				width="100" query="true"></t:dgCol>
 			<%--    <t:dgCol title="产品" field="kknwldgName"    width="100"></t:dgCol> --%>
 			<t:dgCol title="名称" field="name" width="100" query="true"></t:dgCol>
-			<t:dgCol title="描述" field="descp" width="100"></t:dgCol>
-			<t:dgCol title="方案组ID" field="groupId" width="100"></t:dgCol>
-			<t:dgCol title="方案ID" field="artifactId" width="100"></t:dgCol>
-			<t:dgCol title="版本号" field="versionId" width="100"></t:dgCol>
-			<t:dgCol title="版本描述" field="versionDesc" width="100"></t:dgCol>
-			<%--    <t:dgCol title="状态" field="status"  dictionary="prodStatus" query="true" width="100"></t:dgCol>  --%>
+			<t:dgCol title="类型" field="type"  dictionary="prodtype" query="true" width="100"></t:dgCol>
 			<t:dgCol title="操作" field="opt" width="100"></t:dgCol>
 			<t:dgDelOpt title="删除" url="ruleProdController.do?del&id={id}"
 				operationCode="del" />
-			<t:dgFunOpt funname="addBizObject(id,name)" title="添加方案包"
-				operationCode="addBizObject"></t:dgFunOpt>
-			<%--  <t:dgFunOpt funname="pckBizObject(id)" title="产品打包" operationCode="pckBizObject"></t:dgFunOpt>
+			 <t:dgFunOpt funname="syncObject(id,tempType)" title="同步" operationCode="syncObject"></t:dgFunOpt>
+			<%--  <t:dgFunOpt funname="pckBizObject(id)" title="决策打包" operationCode="pckBizObject"></t:dgFunOpt>
    <t:dgDelOpt url="ruleProdController.do?downJar&fileName={name}&version={versionId}&status={status}" title="产品包下载"></t:dgDelOpt> --%>
 			<%--  <t:dgToolBar title="录入" icon="icon-add" url="ruleProdController.do?addorupdate" funname="add"></t:dgToolBar> --%>
 			<t:dgToolBar title="编辑" icon="icon-edit"
@@ -71,7 +66,20 @@
 	        openwindow("打包产品",url,"ruleProdList",700,500);
 	}
  	
+ 	function syncObject(id,tempType){
+ 		$.dialog.confirm('确定同步决策数据吗', function(){
+ 			$.post("brmsRuleTableController.do?doSyncDataModel",{id:id,tempType:tempType},function(data){
+ 	 			var d = $.parseJSON(data);
+ 				if (d.success) {
+ 					tip(d.msg);
+ 				}else{
+ 					tip(d.msg);
+ 				}
+ 	 		});
+ 		}, function(){
+ 		});
  	
+ 	}
  	
  	
 </script>

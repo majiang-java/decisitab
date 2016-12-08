@@ -11,7 +11,7 @@
 	<fieldset class="step">
 	<div class="form">
 		<label class="Validform_label"> 模版类型: </label> 
-		<t:dictSelect id="typeid" field="typeid" typeGroupCode="tempType" datatype="*"></t:dictSelect>
+		<select id="typeid" name="typeId" datatype="*"></select>
 		<span class="Validform_checktip">请选择模版类型</span>
 	</div>
 	<div class="form">
@@ -20,5 +20,20 @@
 	<div class="form" id="filediv" style="height: 50px"></div>
 	</fieldset>
 </t:formvalid>
+<script type="text/javascript">
+$(function(){
+	$.getJSON("templateDescController.do?combox",function(data){
+		
+		var $typeid= $("#typeid");
+		$typeid.empty();
+		$typeid.append("<option value='' selected>-请选择-</option>")
+		$.each(data,function(i,n){
+			$("#typeid").append("<option value='"+n.id+"'>"+n.text+"</option>");
+		});
+	});
+	
+})
+
+</script>
 </body>
 </html>

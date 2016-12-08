@@ -1,5 +1,7 @@
 package com.ifre.common;
 
+import java.io.File;
+
 /**
  * 常量类
  * @author 王传圣
@@ -62,9 +64,18 @@ public class Constants {
     public static final int ANTIFRAUD = 71;
     
     
-    public static final String START = "0";  //初始化完成
-    public static final String PASS_TEST = "1"; //经过测试
-    public static final String PUBLISH = "2";  //发布成功
-    public static final String PACKAGE = "3"; //打包成功
+    public static final String START = "1";  //初始化完成
+    public static final String PASS_TEST = "2"; //经过测试
+    public static final String PUBLISH = "3";  //发布成功
+    public static final String PACKAGE = "5"; //打包成功
     public static final String RE_PASS_TEST = "4"; //发布后再编辑
+    public static final String RULE_TEMP_TYPE = "fqz"; //规则模板类型
+    public static final String MODEL_TEMP_TYPE = "scorecards"; //模型模板类型
+    public static final String NEW_TEMP_TYPE = "newCard"; //新评分卡类型
+    public static final String RULE_INTF_URL = "/saas_deis/shared/brmsShared/api/callModelFire?jsonData="; //规则模板接口
+    public static final String MODEL_INTF_URL = "/saas_deis/shared/brmsShared/api/callModelFire?jsonData="; //模型模板接口
+    public static final Integer ACTIVATE = 1;  //激活
+    public static final Integer INACTIVATE = 0; //关闭
+    
+    public static final String BACKUP_PATH = File.separator+"home"+File.separator+"backup";
 }

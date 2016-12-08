@@ -60,7 +60,7 @@ public class ExcelReaderForNormalImpl implements ExcelReaderI{
 			String json = getAllMergedRegion(sheet);
 			int rowNum = sheet.getLastRowNum();
 			HSSFRow row = sheet.getRow(0);
-			int colNum = row.getPhysicalNumberOfCells(); // 获取有数据的列的个数
+			//int colNum = row.getPhysicalNumberOfCells(); // 获取有数据的列的个数
 			// int colNum = 15;
 			// 正文内容应该从第二行开始,第一行为表头的标题
 			Map<Integer, String> content = new HashMap<Integer, String>();
@@ -70,6 +70,7 @@ public class ExcelReaderForNormalImpl implements ExcelReaderI{
 			/*	if(row == null){
 					continue;
 				}*/
+				int colNum = row != null ? row.getLastCellNum() : 0;
 				StringBuilder sbder = new StringBuilder();
 				if(log.isDebugEnabled()){
 					log.debug("colNum :" +colNum);

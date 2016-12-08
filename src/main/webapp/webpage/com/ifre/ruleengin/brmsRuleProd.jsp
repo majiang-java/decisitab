@@ -30,8 +30,9 @@
 		    </div>
 			<div class="form">
 		      <label class="Validform_label">描述:</label>
-		      <input class="inputxt" id="descp" name="descp" ignore="ignore"
-					   value="${brmsRuleProdPage.descp}">
+		      <%-- <input class="inputxt" id="descp" name="descp" ignore="ignore"
+					   value="${brmsRuleProdPage.descp}"> --%>
+			  <textarea class="inputxt" id="descp" name="descp" ignore="ignore" rows="2" style="min-width:260px;">${brmsRuleProdPage.descp}</textarea>
 		      <span class="Validform_checktip"></span>
 		    </div>
 			<div class="form">
@@ -54,8 +55,9 @@
 		    </div>
 			<div class="form">
 		      <label class="Validform_label">版本描述:</label>
-		      <input class="inputxt" id="versionDesc" name="versionDesc" ignore="ignore"
-					   value="${brmsRuleProdPage.versionDesc}">
+		      <%-- <input class="inputxt" id="versionDesc" name="versionDesc" ignore="ignore"
+					   value="${brmsRuleProdPage.versionDesc}"> --%>
+			  <textarea id="versionDesc" name="versionDesc" ignore="ignore" rows="2" style="min-width:260px;">${brmsRuleProdPage.versionDesc}</textarea>
 		      <span class="Validform_checktip"></span>
 		    </div>
 			<div class="form">

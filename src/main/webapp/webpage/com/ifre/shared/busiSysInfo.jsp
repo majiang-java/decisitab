@@ -10,6 +10,38 @@
   <t:formvalid formid="formobj" dialog="true" usePlugin="password" layout="table" action="busiSysInfoController.do?save">
 			<input id="id" name="id" type="hidden" value="${busiSysInfoPage.id }">
 			<table style="width: 600px;" cellpadding="0" cellspacing="1" class="formtable">
+				<c:if test="${'A01' != orgCode && null != orgCode}">
+					<tr>
+						<td align="right">
+							<label class="Validform_label">
+								绑定机构:
+							</label>
+						</td>
+						<td class="value">
+							<input class="inputxt" id="sysSource" name="sysSource" 
+								   value="${departname}" style="min-width:260px;" readonly="readonly">
+							<input hidden="hidden" id="orgCode" name="orgCode" value="${orgCode}">
+							<span class="Validform_checktip"></span>
+						</td>
+					</tr>
+				</c:if>
+				<c:if test="${'A01' == orgCode}">
+					<tr>
+						<td align="right">
+							<label class="Validform_label">
+								绑定机构:
+							</label>
+						</td>
+						<td class="value">
+							<select id = "orgCode" name = "orgCode" style="min-width:265px;" >
+								<c:forEach items="${departList}"
+									var="depart">
+									<option value="${depart.orgCode}">${depart.departname}</option>
+								</c:forEach>
+							</select>
+						</td>
+					</tr>
+				</c:if>
 				<tr>
 					<td align="right">
 						<label class="Validform_label">
@@ -18,7 +50,7 @@
 					</td>
 					<td class="value">
 						<input class="inputxt" id="sysSource" name="sysSource" 
-							   value="${busiSysInfoPage.sysSource}" datatype="*">
+							   value="${busiSysInfoPage.sysSource}" datatype="*"  style="min-width:260px;">
 						<span class="Validform_checktip"></span>
 					</td>
 				</tr>
@@ -29,8 +61,9 @@
 						</label>
 					</td>
 					<td class="value">
-						<input class="inputxt" id="sysDesc" name="sysDesc"
-							   value="${busiSysInfoPage.sysDesc}" datatype="*">
+						<%-- <input class="inputxt" id="sysDesc" name="sysDesc"
+							   value="${busiSysInfoPage.sysDesc}" datatype="*" style="min-width:260px;"> --%>
+						<textarea id="sysDesc" name="sysDesc" datatype="*" rows="2" style="min-width:260px;">${busiSysInfoPage.sysDesc}</textarea>
 						<span class="Validform_checktip"></span>
 					</td>
 				</tr>
@@ -42,7 +75,7 @@
 					</td>
 					<td class="value">
 						<input class="inputxt" id="password" name="password" 
-							   value="${busiSysInfoPage.password}" ignore="ignore>
+							   value="${busiSysInfoPage.password}" ignore="ignore" style="min-width:260px;">
 						<span class="Validform_checktip"></span>
 					</td>
 				</tr>
@@ -54,7 +87,7 @@
 					</td>
 					<td class="value">
 						<input class="inputxt" id="signKey" name="signKey" ignore="ignore"
-							   value="${busiSysInfoPage.signKey}">
+							   value="${busiSysInfoPage.signKey}" style="min-width:260px;">
 						<span class="Validform_checktip"></span>
 					</td>
 				</tr>
@@ -66,7 +99,7 @@
 					</td>
 					<td class="value">
 						<input class="inputxt" id="encryptKey" name="encryptKey" ignore="ignore"
-							   value="${busiSysInfoPage.encryptKey}">
+							   value="${busiSysInfoPage.encryptKey}" style="min-width:260px;">
 						<span class="Validform_checktip"></span>
 					</td>
 				</tr>
@@ -78,7 +111,7 @@
 					</td>
 					<td class="value">
 						<input class="inputxt" id="notifyUrl" name="notifyUrl" ignore="ignore"
-							   value="${busiSysInfoPage.notifyUrl}">
+							   value="${busiSysInfoPage.notifyUrl}" style="min-width:260px;">
 						<span class="Validform_checktip"></span>
 					</td>
 				</tr>

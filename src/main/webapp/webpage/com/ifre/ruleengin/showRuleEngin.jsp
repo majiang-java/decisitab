@@ -84,6 +84,25 @@ $(function(){
 				   $($mainrows[i]).hide();
 				   $($leftrows[i]).hide();
 			   }
+			   var tempNum = 0;
+			   var td7 =  $($mainrows[7]).find("td");
+			   td7.each(function(c){
+				   var tempText = $(this).text();
+				 
+				   if(tempText=="贷款类型"||tempText=="模型类型"){
+					   tempNum = c;
+				   }
+			   });
+		
+			   $mainrows.each(function(){
+				   $($(this).find("td")[tempNum]).hide();
+			   });
+			   
+			   var topTr = $(".ht_clone_top").find("table.htCore").find("tr").find("th");
+			   var topMaster = $(".ht_master").find("table.htCore").find("thead").find("tr").find("th");
+			   $(topTr[tempNum]).hide();
+			   $(topMaster[tempNum]).hide();
+			   
 		   },50);
 		   }
 

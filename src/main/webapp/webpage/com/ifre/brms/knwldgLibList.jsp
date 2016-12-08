@@ -11,8 +11,6 @@
 <%--     <t:dgCol title="所属机构名称" field="orgName" query="true" width="120"></t:dgCol> --%>
    <t:dgCol title="名称" field="name"   width="120" query="true"></t:dgCol>
    <t:dgCol title="描述" field="descp"   width="120" query="true"></t:dgCol>
-   <t:dgCol title="协议" field="prtcl"   width="120"></t:dgCol>
-   <t:dgCol title="分支名" field="brchName"   width="120"></t:dgCol>
    <t:dgCol title="状态" field="status"   width="120" query="true" dictionary="knwStatus"></t:dgCol>
    <t:dgCol title="操作" field="opt" width="100"></t:dgCol>
    <t:dgDelOpt title="删除" url="knwldgLibController.do?del&id={id}" operationCode="del"/>

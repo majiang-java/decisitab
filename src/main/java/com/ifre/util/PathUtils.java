@@ -8,8 +8,8 @@ public class PathUtils {
 	
 	public static String getTargetPath(){
 		
-		String root = System.getProperty("brms");
-		return root + "/" + "target/";
+		String root = System.getProperty("saas_brms");
+		return root + File.separator + "target"+File.separator;
 		
 	}
 	

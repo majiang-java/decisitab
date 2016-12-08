@@ -145,7 +145,7 @@ public class GenMavenFileUtil {
         
 		try{
 			fos = new FileOutputStream(filename);
-			out = new OutputStreamWriter(fos, CodeResourceUtil.SYSTEM_ENCODING);
+			out = new OutputStreamWriter(fos, "utf-8");
 			out.write(content);
 		}catch(Exception e){
 			e.printStackTrace();

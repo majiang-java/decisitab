@@ -30,8 +30,9 @@
 		    </div>
 			<div class="form">
 		      <label class="Validform_label">描述:</label>
-		      <input class="inputxt" id="descp" name="descp" ignore="ignore"
-					   value="${brmsRulePckgPage.descp}">
+		      <%-- <input class="inputxt" id="descp" name="descp" ignore="ignore"
+					   value="${brmsRulePckgPage.descp}"> --%>
+			  <textarea class="inputxt" id="descp" name="descp" ignore="ignore" rows="2" style="min-width:260px;">${brmsRulePckgPage.descp}</textarea>
 		      <span class="Validform_checktip"></span>
 		    </div>
 			<div class="form">

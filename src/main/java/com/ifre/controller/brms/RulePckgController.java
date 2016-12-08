@@ -12,8 +12,10 @@ import org.jeecgframework.core.common.model.json.AjaxJson;
 import org.jeecgframework.core.common.model.json.DataGrid;
 import org.jeecgframework.core.constant.Globals;
 import org.jeecgframework.core.util.MyBeanUtils;
+import org.jeecgframework.core.util.ResourceUtil;
 import org.jeecgframework.core.util.StringUtil;
 import org.jeecgframework.tag.core.easyui.TagUtil;
+import org.jeecgframework.web.system.pojo.base.TSUser;
 import org.jeecgframework.web.system.service.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -93,6 +95,14 @@ public class RulePckgController extends BaseController {
 			sql += "and pc.parentPckgId = '"+ rulePckg.getParentPckgId() + "'";
 		}
 		CriteriaQuery cq = new CriteriaQuery(RulePckgEntity.class, dataGrid);
+		//机构过滤-后台实现
+		TSUser tSUser = ResourceUtil.getSessionUserName();
+		if(!"A01".equals(tSUser.getCurrentDepart().getOrgCode())){
+			//cq无效果，原因：马江修改了jeecg源码，使用的是sql的形式获取数据
+			//cq.eq("orgCode", tSUser.getSysCompanyCode());
+			sql += " and  pc.orgCode = '" + tSUser.getCurrentDepart().getOrgCode() + "'";
+		} 
+		cq.add();
 		//查询条件组装器
 		org.jeecgframework.core.extend.hqlsearch.HqlGenerateUtil.installHql(cq, rulePckg, request.getParameterMap());
 		this.rulePckgService.getDataGridAReturn(cq, true,sql);

@@ -20,8 +20,10 @@ import org.jeecgframework.core.constant.Globals;
 import org.jeecgframework.core.util.StringUtil;
 import org.jeecgframework.tag.core.easyui.TagUtil;
 import org.jeecgframework.web.system.pojo.base.TSDepart;
+import org.jeecgframework.web.system.pojo.base.TSUser;
 import org.jeecgframework.web.system.service.SystemService;
 import org.jeecgframework.core.util.MyBeanUtils;
+import org.jeecgframework.core.util.ResourceUtil;
 
 import com.ifre.entity.brms.KnwldgLibEntity;
 import com.ifre.service.brms.KnwldgLibServiceI;
@@ -29,7 +31,7 @@ import com.ifre.service.brms.RuleProdServiceI;
 
 /**   
  * @Title: Controller
- * @Description: 知识库
+ * @Description: 产品
  * @author zhangdaihao
  * @date 2016-05-19 11:47:26
  * @version V1.0   
@@ -62,7 +64,7 @@ public class KnwldgLibController extends BaseController {
 
 
 	/**
-	 * 知识库列表 页面跳转
+	 * 产品列表 页面跳转
 	 * 
 	 * @return
 	 */
@@ -83,6 +85,12 @@ public class KnwldgLibController extends BaseController {
 	@RequestMapping(params = "datagrid")
 	public void datagrid(KnwldgLibEntity knwldgLib,HttpServletRequest request, HttpServletResponse response, DataGrid dataGrid) {
 		CriteriaQuery cq = new CriteriaQuery(KnwldgLibEntity.class, dataGrid);
+		//机构过滤-后台实现
+		TSUser tSUser = ResourceUtil.getSessionUserName();
+		if(!"A01".equals(tSUser.getCurrentDepart().getOrgCode())){
+			cq.eq("orgCode", tSUser.getSysCompanyCode());
+		} 
+		cq.add();
 		//查询条件组装器
 		org.jeecgframework.core.extend.hqlsearch.HqlGenerateUtil.installHql(cq, knwldgLib, request.getParameterMap());
 		this.knwldgLibService.getDataGridReturn(cq, true);
@@ -90,7 +98,7 @@ public class KnwldgLibController extends BaseController {
 	}
 
 	/**
-	 * 删除知识库
+	 * 删除产品
 	 * 
 	 * @return
 	 */
@@ -102,9 +110,9 @@ public class KnwldgLibController extends BaseController {
 		String sql="select count(*) from BRMS_RULE_PROD where KKNWLDG_ID='"+knwldgLib.getId()+"'";
 	    Long a=systemService.getCountForJdbc(sql);
 	    if(a>0){
-	    	message = "决策产品有用到此条知识库，拒绝删除";	
+	    	message = "决策产品有用到此条产品，拒绝删除";	
 	    }else{
-		message = "知识库删除成功";
+		message = "产品删除成功";
 		knwldgLibService.delete(knwldgLib);
 	    systemService.addLog(message, Globals.Log_Type_DEL, Globals.Log_Leavel_INFO);
 	    }
@@ -114,7 +122,7 @@ public class KnwldgLibController extends BaseController {
 
 
 	/**
-	 * 添加知识库
+	 * 添加产品
 	 * 
 	 * @param ids
 	 * @return
@@ -124,14 +132,18 @@ public class KnwldgLibController extends BaseController {
 	public AjaxJson save(KnwldgLibEntity knwldgLib, HttpServletRequest request) {
 		String orgId = request.getParameter("orgId");
 		System.out.println(".....................................:"+orgId);	
+		AjaxJson j = new AjaxJson();
 		if (StringUtil.isNotEmpty(orgId)) {
 			TSDepart depart = systemService.getEntity(TSDepart.class, orgId);
 			System.out.println(depart.getOrgCode());
 			knwldgLib.setOrgCode(depart.getOrgCode());
+		}else{
+			message = "请选择一个所属机构";
+			j.setMsg(message);
+			return j;
 		}
-		AjaxJson j = new AjaxJson();
 		if (StringUtil.isNotEmpty(knwldgLib.getId())) {
-			message = "知识库更新成功";
+			message = "产品更新成功";
 			KnwldgLibEntity t = knwldgLibService.get(KnwldgLibEntity.class, knwldgLib.getId());
 			try {
 				MyBeanUtils.copyBeanNotNull2Bean(knwldgLib, t);
@@ -139,10 +151,10 @@ public class KnwldgLibController extends BaseController {
 				systemService.addLog(message, Globals.Log_Type_UPDATE, Globals.Log_Leavel_INFO);
 			} catch (Exception e) {
 				e.printStackTrace();
-				message = "知识库更新失败";
+				message = "产品更新失败";
 			}
 		} else {
-			message = "知识库添加成功";
+			message = "产品添加成功";
 			knwldgLib.setCreateName("成功");
 			knwldgLibService.save(knwldgLib);			
 			systemService.addLog(message, Globals.Log_Type_INSERT, Globals.Log_Leavel_INFO);
@@ -152,7 +164,7 @@ public class KnwldgLibController extends BaseController {
 	}
 
 	/**
-	 * 知识库列表页面跳转
+	 * 产品列表页面跳转
 	 * 
 	 * @return
 	 */

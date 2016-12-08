@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.jeecgframework.core.common.service.CommonService;
 
+import com.ifre.entity.brms.RuleProdEntity;
 import com.ifre.exception.IfreException;
 
 public interface TemplateMangerServiceI extends CommonService{
@@ -25,5 +26,9 @@ public interface TemplateMangerServiceI extends CommonService{
 
 	String findIdByCode(String typeCode);
 
-	void cloneTemplateToBrms(String departId, String knowId, String prodId, String typeCode);
+	void cloneTemplateToBrms(String departId, String knowId, String prodId, String typeCode,String isUse) throws Exception;
+	
+	public void syncDataToDecisitab(RuleProdEntity ruleProd) throws Exception;
+
+	public void syncDecisitabToData(String tableId) throws Exception;
 }

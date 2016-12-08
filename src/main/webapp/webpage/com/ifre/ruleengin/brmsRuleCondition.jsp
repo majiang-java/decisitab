@@ -42,8 +42,9 @@
 		    </div>
 			<div class="form">
 		      <label class="Validform_label">属性条件描述:</label>
-		      <input class="inputxt" id="propCondDes" name="propCondDes" ignore="ignore"
-					   value="${brmsRuleConditionPage.propCondDes}">
+		      <%-- <input class="inputxt" id="propCondDes" name="propCondDes" ignore="ignore"
+					   value="${brmsRuleConditionPage.propCondDes}"> --%>
+			  <textarea id="propCondDes" name="propCondDes"  ignore="ignore" rows="2" style="min-width:260px;">${brmsRuleConditionPage.propCondDes}</textarea>
 		      <span class="Validform_checktip"></span>
 		    </div>
 	    </fieldset>

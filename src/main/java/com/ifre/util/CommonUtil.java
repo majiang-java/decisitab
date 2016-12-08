@@ -28,6 +28,8 @@ import org.dom4j.Element;
 
 import com.alibaba.fastjson.JSONObject;
 
+import jodd.util.Base64;
+
 
 /**
  * 公共方法工具类
@@ -282,7 +284,7 @@ public class CommonUtil {
 				}
 			}
 		}
-		return new sun.misc.BASE64Encoder().encode(out.toByteArray());
+		return new Base64().encodeToString(out.toByteArray());
 	}
 	
 	
@@ -302,7 +304,7 @@ public class CommonUtil {
 		byte[] compressed=null;
 		String decompressed = null;
 		try {
-			compressed = new sun.misc.BASE64Decoder().decodeBuffer(compressedStr);
+			compressed = Base64.decode(compressedStr);
 			in=new ByteArrayInputStream(compressed);
 			ginzip=new GZIPInputStream(in);
 			byte[] buffer = new byte[1024];

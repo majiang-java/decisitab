@@ -1,5 +1,6 @@
 package com.ifre.controller.shared;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,8 +11,11 @@ import org.jeecgframework.core.common.model.json.AjaxJson;
 import org.jeecgframework.core.common.model.json.DataGrid;
 import org.jeecgframework.core.constant.Globals;
 import org.jeecgframework.core.util.MyBeanUtils;
+import org.jeecgframework.core.util.ResourceUtil;
 import org.jeecgframework.core.util.StringUtil;
 import org.jeecgframework.tag.core.easyui.TagUtil;
+import org.jeecgframework.web.system.pojo.base.TSDepart;
+import org.jeecgframework.web.system.pojo.base.TSUser;
 import org.jeecgframework.web.system.service.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -21,6 +25,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ifre.entity.shared.BusiSysInfoEntity;
+import com.ifre.exception.IfreException;
+import com.ifre.service.DepartServiceI;
 import com.ifre.service.shared.BusiSysInfoServiceI;
 
 /**   
@@ -42,6 +48,9 @@ public class BusiSysInfoController extends BaseController {
 
 	@Autowired
 	private BusiSysInfoServiceI busiSysInfoService;
+	@Autowired
+	private DepartServiceI departService;
+	
 	@Autowired
 	private SystemService systemService;
 	private String message;
@@ -77,6 +86,12 @@ public class BusiSysInfoController extends BaseController {
 	@RequestMapping(params = "datagrid")
 	public void datagrid(BusiSysInfoEntity busiSysInfo,HttpServletRequest request, HttpServletResponse response, DataGrid dataGrid) {
 		CriteriaQuery cq = new CriteriaQuery(BusiSysInfoEntity.class, dataGrid);
+		//机构过滤-后台实现
+		TSUser tSUser = ResourceUtil.getSessionUserName();
+		if(!"A01".equals(tSUser.getCurrentDepart().getOrgCode())){
+			cq.eq("orgCode", tSUser.getCurrentDepart().getOrgCode());
+		} 
+		cq.add();
 		//查询条件组装器
 		org.jeecgframework.core.extend.hqlsearch.HqlGenerateUtil.installHql(cq, busiSysInfo);
 		this.busiSysInfoService.getDataGridReturn(cq, true);
@@ -125,16 +140,22 @@ public class BusiSysInfoController extends BaseController {
 				e.printStackTrace();
 				message = "渠道来源信息更新失败";
 			}
-		} else {
-			message = "渠道来源信息添加成功";
-			busiSysInfo.setStatus(0);
-			busiSysInfo.setSorts(0);
-			busiSysInfo.setCreateBy("system");
-			busiSysInfo.setCreateDate(new Date());
-			busiSysInfo.setUpdateBy("system");
-			busiSysInfo.setUpdateDate(new Date());
-			busiSysInfoService.save(busiSysInfo);
-			systemService.addLog(message, Globals.Log_Type_INSERT, Globals.Log_Leavel_INFO);
+		} else{
+			TSUser tSUser = ResourceUtil.getSessionUserName();
+			if(!"A01".equals(tSUser.getCurrentDepart().getOrgCode()) && !tSUser.getCurrentDepart().getOrgCode().equals(busiSysInfo.getOrgCode())){
+				message = "渠道来源信息添加失败，机构选择不合法";
+				systemService.addLog(message, Globals.Log_Type_INSERT, Globals.Log_Leavel_INFO);
+			}else{
+				message = "渠道来源信息添加成功";
+				busiSysInfo.setStatus(0);
+				busiSysInfo.setSorts(0);
+				busiSysInfo.setCreateBy("system");
+				busiSysInfo.setCreateDate(new Date());
+				busiSysInfo.setUpdateBy("system");
+				busiSysInfo.setUpdateDate(new Date());
+				busiSysInfoService.save(busiSysInfo);
+				systemService.addLog(message, Globals.Log_Type_INSERT, Globals.Log_Leavel_INFO);
+			} 
 		}
 		j.setMsg(message);
 		return j;
@@ -148,8 +169,21 @@ public class BusiSysInfoController extends BaseController {
 	@RequestMapping(params = "addorupdate")
 	public ModelAndView addorupdate(BusiSysInfoEntity busiSysInfo, HttpServletRequest req) {
 		if (StringUtil.isNotEmpty(busiSysInfo.getId())) {
+			//此处默认一条规则，编辑渠道信息时，绑定的机构不可以修改
 			busiSysInfo = busiSysInfoService.getEntity(BusiSysInfoEntity.class, busiSysInfo.getId());
 			req.setAttribute("busiSysInfoPage", busiSysInfo);
+		}else{
+			TSUser tSUser = ResourceUtil.getSessionUserName();
+			req.setAttribute("orgCode", tSUser.getCurrentDepart().getOrgCode());
+			req.setAttribute("departname", tSUser.getCurrentDepart().getDepartname());
+			if("A01".equals(tSUser.getCurrentDepart().getOrgCode())){
+				try {
+					List<TSDepart> list = departService.getAllTSDepart();
+					req.setAttribute("departList", list);
+				} catch (IfreException e) {
+					systemService.addLog(e.getMessage(), Globals.Log_Type_OTHER, Globals.Log_Leavel_ERROR);
+				}
+			}
 		}
 		return new ModelAndView("com/ifre/shared/busiSysInfo");
 	}

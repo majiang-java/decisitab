@@ -17,7 +17,7 @@ import javax.tools.ToolProvider;
 import org.apache.log4j.Logger;
 
 import com.ifre.util.PathUtils;
-  
+
 /** 
  * 动态重新加载Class <br> 
  * Java内置的ClassLoader总会在加载一个Class之前检查这个Class是否已经被加载过 <br> 
@@ -200,7 +200,7 @@ public class DynamicEngine {
 	            long end = System.currentTimeMillis();  
 	            logger.info("编译成功，用时:" + (end - start) + "ms"); 
         	}catch(Exception e){
-        		throw new Exception("编译失败");
+        		throw new Exception("编译失败",e);
         	}finally{
         		  classLoader.close();
         	}
